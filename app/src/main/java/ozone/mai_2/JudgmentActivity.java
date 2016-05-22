@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -57,6 +58,10 @@ public class JudgmentActivity extends AppCompatActivity {
     private void addComboSeekBar(final int row, final int column){
         final View view = getLayoutInflater().inflate(R.layout.custom_seekbar, null);
         ComboSeekBar comboSeekBar = (ComboSeekBar)view.findViewById(R.id.comboseekbar);
+        TextView criterionA = (TextView)view.findViewById(R.id.criterion_A);
+        TextView criterionB = (TextView)view.findViewById(R.id.criterion_B);
+        criterionA.setText(currentProject.criterions[row]);
+        criterionB.setText(currentProject.criterions[column]);
         List<String> points = new ArrayList<>();
         points.add("9");
         points.add("7");
