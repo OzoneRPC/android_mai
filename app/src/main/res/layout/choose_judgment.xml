@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/judgment_description"
+        android:id="@+id/name_project"
+        android:layout_marginTop="34dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/button_criterions_judgment"
+        android:id="@+id/button_judgment_criterions"
+        android:layout_below="@+id/name_project"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="37dp"
+        android:layout_alignEnd="@+id/button_judgment_alternatives" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/button_alternatives_judgment"
+        android:id="@+id/button_judgment_alternatives"
+        android:layout_below="@+id/button_judgment_criterions"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="38dp" />
+
+</RelativeLayout>

@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">MAI_2</string>
+    <string name="projects">Проекты</string>
+    <string name="add_alternatives">Добавить альтернативы</string>
+    <string name="add_criterions">Добавить критерии</string>
+    <string name="choose_judgment">Выбрать суждение</string>
+    <string name="objective">Цель</string>
+    <string name="name">Название</string>
+    <string name="next">Далее</string>
+    <string name="save">Сохранить</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="judgment_description">Теперь необходимо произвести оценку альтернатив и критериев</string>
+    <string name="button_criterions_judgment">Произвести оценку критериев</string>
+    <string name="button_alternatives_judgment">Произвести оценку альтернатив</string>
+    <string name="judgment_criterions_title">Оценка критериев</string>
+    <string name="judgment_alternatives_title">Оценка альтернатив</string>
+
+
+
+</resources>
