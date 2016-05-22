@@ -1,19 +1,14 @@
 package ozone.mai_2;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Layout;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 import com.infteh.comboseekbar.ComboSeekBar;
 
 import java.util.ArrayList;
@@ -24,22 +19,22 @@ import java.util.List;
  * Created by Ozone on 09.05.2016.
  */
 public class JudgmentActivity extends AppCompatActivity {
-    private SharedPreferences projects;
     private HashMap<Integer, Integer> values = new HashMap<>();
     private Project currentProject;
     private int id = 0;
     private int notCompleted = 0;
     private LinearLayout seekbarContainer;
-    private Gson gson = new GsonBuilder().create();
+    private ProjectControl control;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.judgment);
+
+        control = new ProjectControl(this);
         seekbarContainer = (LinearLayout)findViewById(R.id.comboseekbar_l_laylout);
 
-        projects = getSharedPreferences("projects", MODE_PRIVATE);
+        String nameFromExtras = this.getIntent().getExtras().getString("project_name");
 
-        currentProject = gson.fromJson(projects.getString(this.getIntent().getExtras().getString("project_name"), null), new TypeToken<Project>() {
-        }.getType());
+        currentProject = control.getProjectByName(nameFromExtras);
 
         Intent intent = getIntent();
         int type = intent.getIntExtra("type", -1);
@@ -96,8 +91,7 @@ public class JudgmentActivity extends AppCompatActivity {
                     save.setOnClickListener(new View.OnClickListener(){
                         @Override
                         public void onClick(View v){
-                            save();
-                            finish();
+                            saveAndExit();
                         }
                     });
                 }
@@ -141,17 +135,15 @@ public class JudgmentActivity extends AppCompatActivity {
     }
     @Override
     public void onBackPressed() {
-        save();
+        saveAndExit();
         finish();
     }
-    private void save(){
-        SharedPreferences.Editor editor = projects.edit();
-        editor.putString(currentProject.name, gson.toJson(currentProject, new TypeToken<Project>() {
-        }.getType()));
-        editor.apply();
+    private void saveAndExit(){
+        control.updateProject(currentProject);
 
         Intent intent = new Intent();
         intent.putExtra("project_name", currentProject.name);
         setResult(RESULT_OK, intent);
+        finish();
     }
 }

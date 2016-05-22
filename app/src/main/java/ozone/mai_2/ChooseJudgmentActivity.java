@@ -21,13 +21,13 @@ import java.lang.reflect.Type;
 public class ChooseJudgmentActivity extends AppCompatActivity {
     private int CRITERIONS = 0;
     private int ALTERNATIVES = 1;
-    private Gson gson = new GsonBuilder().create();
-
+    private ProjectControl control;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.choose_judgment);
 
+        control = new ProjectControl(this);
 
 
         final String projectName = this.getIntent().getExtras().getString("project_name");
@@ -62,10 +62,8 @@ public class ChooseJudgmentActivity extends AppCompatActivity {
 
         SharedPreferences projects = getSharedPreferences("projects", MODE_PRIVATE);
 
-        Project currentProject = gson.fromJson(projects.getString(data.getExtras().getString("project_name"), null), new TypeToken<Project>() {
-        }.getType());
-
-
+        String nameFromExtras = data.getExtras().getString("project_name");
+        Project changedProject = control.getProjectByName(nameFromExtras);
         /*CharSequence pickedStation = "";
         switch (resultCode){
             case RESULT_OK:

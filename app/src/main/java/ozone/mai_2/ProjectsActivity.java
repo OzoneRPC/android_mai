@@ -15,7 +15,6 @@ public class ProjectsActivity extends AppCompatActivity {
         setContentView(R.layout.projects);
 
         Button button = (Button)findViewById(R.id.add_project);
-
         AddProjectDialog dialog = new AddProjectDialog();
         dialog.show(getFragmentManager(), "dlg1");
     }
