@@ -26,13 +26,13 @@ import java.util.Set;
 /**
  * Created by Ozone on 04.05.2016.
  */
-public class AddProjectDialog extends DialogFragment{
+/*public class AddProjectDialog extends DialogFragment{
     private final static int MIN_CRITERIONS_COUNT = 1;
     private final static int MIN_ALTERNATIVES_COUNT = 1;
     private int criterionsCount = 0;
     private int alternativesCount = 0;
-    /*private List<View> criterionsListView;
-    private List<View> alternativesListView;*/
+    *//*private List<View> criterionsListView;
+    private List<View> alternativesListView;*//*
     private ProjectControl control;
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -126,4 +126,4 @@ public class AddProjectDialog extends DialogFragment{
     }
 
 
-}
+}*/

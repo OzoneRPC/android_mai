@@ -27,6 +27,7 @@ dependencies {
     compile 'com.android.support:design:23.1.1'
     compile 'com.aat:android-comboseekbar:1.0.2@aar'
     compile 'com.google.code.gson:gson:1.7.2'
+    compile 'com.github.bmelnychuk:atv:1.2.+'
 }
 allprojects {
     repositories {

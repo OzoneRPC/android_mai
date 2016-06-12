@@ -8,6 +8,9 @@
     <string name="name">Название</string>
     <string name="next">Далее</string>
     <string name="save">Сохранить</string>
+    <string name="add">добавить</string>
+    <string name="delete">удалить</string>
+
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>

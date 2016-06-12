@@ -3,6 +3,7 @@ package ozone.mai_2;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -12,22 +13,22 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.SeekBar;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.infteh.comboseekbar.ComboSeekBar;
+import com.unnamed.b.atv.model.TreeNode;
+import com.unnamed.b.atv.view.AndroidTreeView;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private HashMap <String, ArrayList> alternatives = new HashMap<>();
@@ -37,71 +38,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private int id = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        ArrayList vector = new ArrayList();
-        vector.add(0);
-        vector.add(0);
-        vector.add(0);
-        vector.add(0);
-
-        alternatives.put("First alternative", vector);
-        alternatives.put("FiSerst alternative", vector);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        RelativeLayout contentLayout = (RelativeLayout)findViewById(R.id.content_layout);
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-            this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
-
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
-        final LinearLayout linear = (LinearLayout) findViewById(R.id.linear);
-
-        Button button = (Button)findViewById(R.id.button);
-        button.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v){
-                final View view = getLayoutInflater().inflate(R.layout.custom_seekbar, null);
-                ComboSeekBar comboSeekBar = (ComboSeekBar)view.findViewById(R.id.comboseekbar);
-                List<String> points = new ArrayList<>();
-                points.add("-9");
-                points.add("-7");
-                points.add("-5");
-                points.add("-3");
-                points.add("1");
-                points.add("3");
-                points.add("5");
-                points.add("7");
-                points.add("9");
-                comboSeekBar.setId(id);
-                id++;
-                comboSeekBar.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-                    public void onItemClick(AdapterView<?> parent, View v, int position, long position_id) {
-                        int view_id = v.getId();
-                        values.put(v.getId(), position + 1);
-                    }
-                });
-                comboSeekBar.setAdapter(points);
-                comboSeekBar.setSelection(4);
-                linear.addView(view);
-
-            }
-        });
-
-        int n = 5;
-
-        int[] list = new int[n];
-        Arrays.fill(list, 0);
-
+        printComboSeekbar();
+        printTree();
     }
 
     @Override
@@ -161,4 +101,126 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+    private void printComboSeekbar(){
+        ArrayList vector = new ArrayList();
+        vector.add(0);
+        vector.add(0);
+        vector.add(0);
+        vector.add(0);
+
+        alternatives.put("First alternative", vector);
+        alternatives.put("FiSerst alternative", vector);
+
+
+        RelativeLayout contentLayout = (RelativeLayout)findViewById(R.id.content_layout);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        final LinearLayout linear = (LinearLayout) findViewById(R.id.linear);
+
+        Button button = (Button)findViewById(R.id.button);
+        button.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                final View view = getLayoutInflater().inflate(R.layout.custom_seekbar, null);
+                ComboSeekBar comboSeekBar = (ComboSeekBar)view.findViewById(R.id.comboseekbar);
+                List<String> points = new ArrayList<>();
+                points.add("-9");
+                points.add("-7");
+                points.add("-5");
+                points.add("-3");
+                points.add("1");
+                points.add("3");
+                points.add("5");
+                points.add("7");
+                points.add("9");
+                comboSeekBar.setId(id);
+                id++;
+                comboSeekBar.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+                    public void onItemClick(AdapterView<?> parent, View v, int position, long position_id) {
+                        int view_id = v.getId();
+                        values.put(v.getId(), position + 1);
+                    }
+                });
+                comboSeekBar.setAdapter(points);
+                comboSeekBar.setSelection(4);
+                linear.addView(view);
+
+            }
+        });
+
+        int n = 5;
+
+        int[] list = new int[n];
+        Arrays.fill(list, 0);
+
+    }
+    private void printTree(){
+        TreeNode crRoot = TreeNode.root();
+
+        DefaultTreeHolder defItemCriterions = new DefaultTreeHolder(this, getWindow());
+        DefaultTreeHolder.IconTreeItem item = new DefaultTreeHolder.IconTreeItem();
+        item.text = "Критерии";
+
+        //CriterionsTreeHolder.IconTreeItem crItemIcon = new CriterionsTreeHolder.IconTreeItem();
+
+
+        TreeNode crParent = new TreeNode(item).setViewHolder(defItemCriterions);
+        //TreeNode crChild = new TreeNode(crItemIcon).setViewHolder(new CriterionsTreeHolder(this, getWindow()));
+
+        //crParent.addChild(crChild);
+        crRoot.addChild(crParent);
+        final AndroidTreeView tView = new AndroidTreeView(this, crRoot);
+        //tView.expandAll();
+        RelativeLayout layout = (RelativeLayout)findViewById(R.id.main_relative_layout);
+        layout.addView(tView.getView());
+        /*layout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EditText text = (EditText)findViewById(R.id.criterion_add_text);
+                if(text != null && text.isFocused()){
+                    text.clearFocus();
+                    InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                }
+            }
+        });*/
+
+        /*TreeNode parent = new TreeNode("ParentNode");
+        CriterionsTreeHolder.IconTreeItem item = new CriterionsTreeHolder.IconTreeItem();
+        TreeNode child1 = new TreeNode(item).setViewHolder(new CriterionsTreeHolder(this));
+        TreeNode childChild1 = new TreeNode("childChild1");
+        TreeNode childChild2 = new TreeNode("childChild2");
+        TreeNode childChild3 = new TreeNode("childChild3");
+
+        child1.addChildren(childChild1, childChild2, childChild3);
+        parent.addChildren(child1);
+        root.addChild(parent);
+        final AndroidTreeView tView = new AndroidTreeView(this, root);
+
+        RelativeLayout layout = (RelativeLayout)findViewById(R.id.main_relative_layout);
+        layout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!(v instanceof EditText)){
+
+                }
+            }
+        });*/
+        //layout.addView(tView.getView());
+    }
 }
+
+
