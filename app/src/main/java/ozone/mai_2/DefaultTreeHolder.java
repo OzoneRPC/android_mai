@@ -24,13 +24,14 @@ public class DefaultTreeHolder extends TreeNode.BaseNodeViewHolder<DefaultTreeHo
     }
     @Override
     public View createNodeView(final TreeNode node, IconTreeItem value) {
+        final AndroidTreeView tree = this.getTreeView();
         final LayoutInflater inflater = LayoutInflater.from(context);
         final View view = inflater.inflate(R.layout.default_tree_item, null, false);
-        final TextView text = (TextView)view.findViewById(R.id.tree_text);
-        final TextView add = (TextView)view.findViewById(R.id.add);
-        text.setText(value.text);
+        //final TextView text = (TextView)view.findViewById(R.id.tree_text);
+        final TextView add = (TextView)view.findViewById(R.id.add_criterion);
+        //text.setText(value.text);
 
-        final AndroidTreeView tree = this.getTreeView();
+        //tree.toggleNode(node);
 
         add.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -40,12 +41,12 @@ public class DefaultTreeHolder extends TreeNode.BaseNodeViewHolder<DefaultTreeHo
                 tree.expandLevel(node.getLevel());
             }
         });
-        text.setOnClickListener(new View.OnClickListener() {
+        /*text.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 tree.toggleNode(node);
             }
-        });
+        });*/
         return view;
     }
     public static class IconTreeItem {

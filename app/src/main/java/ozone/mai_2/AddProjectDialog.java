@@ -1,8 +1,10 @@
 package ozone.mai_2;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -12,11 +14,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import com.unnamed.b.atv.model.TreeNode;
+import com.unnamed.b.atv.view.AndroidTreeView;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -26,14 +31,15 @@ import java.util.Set;
 /**
  * Created by Ozone on 04.05.2016.
  */
-/*public class AddProjectDialog extends DialogFragment{
+public class AddProjectDialog extends DialogFragment{
     private final static int MIN_CRITERIONS_COUNT = 1;
     private final static int MIN_ALTERNATIVES_COUNT = 1;
-    private int criterionsCount = 0;
+    /*private int criterionsCount = 0;
     private int alternativesCount = 0;
-    *//*private List<View> criterionsListView;
-    private List<View> alternativesListView;*//*
+    /*//*private List<View> criterionsListView;
+    private List<View> alternativesListView;*/
     private ProjectControl control;
+    private TreeNode crRoot;
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         //projects = getActivity().getSharedPreferences(KEY_PROJECTS, 0);
@@ -41,65 +47,37 @@ import java.util.Set;
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         final LayoutInflater inflater = getActivity().getLayoutInflater();
 
+        Activity activity = getActivity();
+
+        Context context = activity;
 
         View view = inflater.inflate(R.layout.add_project, null);
+
         builder.setView(view);
 
 
-        final EditText projectNameView = (EditText)view.findViewById(R.id.projectName);
-        final EditText projectObjectiveView = (EditText)view.findViewById(R.id.projectObjective);
-        final Button add_alternatives = (Button)view.findViewById(R.id.add_alternatives);
-        final LinearLayout criterionLayout = (LinearLayout)view.findViewById(R.id.add_criterion_linear);
-        final LinearLayout alternativesLayout = (LinearLayout)view.findViewById(R.id.add_alternative_linear);
-        Button add_criterions = (Button)view.findViewById(R.id.add_criterions);
-        add_criterions.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final View view = inflater.inflate(R.layout.custom_edittext_layout, null);
-                EditText textfield = (EditText)view.findViewById(R.id.editText);
-                textfield.setText("Критерий " + (criterionsCount+1));
-                Button textfieldDelete = (Button)view.findViewById(R.id.editTextDelete);
+        crRoot = TreeNode.root();
 
-                textfieldDelete.setOnClickListener(new View.OnClickListener(){
-                    @Override
-                    public void onClick(View v){
-                        ((LinearLayout) view.getParent()).removeView(view);
-                    }
-                });
+        DefaultTreeHolder defItemCriterions = new DefaultTreeHolder(context, activity.getWindow());
+        DefaultTreeHolder.IconTreeItem item = new DefaultTreeHolder.IconTreeItem();
+        item.text = "Критерии";
 
-                control.criterionsListView.add(view);
-                criterionLayout.addView(view);
-                criterionsCount++;
-                if(criterionsCount == 2){
-                    add_alternatives.setVisibility(View.VISIBLE);
-                }
-            }
-        });
-        add_alternatives.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v){
+        TreeNode crParent = new TreeNode(item).setViewHolder(defItemCriterions);
 
-                final View view = inflater.inflate(R.layout.custom_edittext_layout, null);
-                EditText textfield = (EditText)view.findViewById(R.id.editText);
-                textfield.setText("Альтернатива " + (alternativesCount+1));
-                Button textfieldDelete = (Button)view.findViewById(R.id.editTextDelete);
+        crRoot.addChild(crParent);
 
-                textfieldDelete.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        ((LinearLayout) view.getParent()).removeView(view);
-                    }
-                });
-                control.alternativesListView.add(view);
-                alternativesLayout.addView(view);
-                alternativesCount++;
+        final AndroidTreeView tView = new AndroidTreeView(getActivity(), crRoot);
 
-            }
-        });
+        RelativeLayout layout = (RelativeLayout)view.findViewById(R.id.add_project_tree_layout);
+
+        layout.addView(tView.getView());
+
+
+
         builder.setPositiveButton("Далее", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int id) {
-                String projectName = projectNameView.getText().toString();
+                /*String projectName = projectNameView.getText().toString();
                 String projectObjective = projectObjectiveView.getText().toString();
                 control.saveProject(projectName, projectObjective);
                 control.updateExistProjects(projectName);
@@ -108,7 +86,7 @@ import java.util.Set;
 
                 Intent intent = new Intent("android.intent.action.CHOOSE_JUDGMENT");
                 intent.putExtras(b);
-                startActivity(intent);
+                startActivity(intent);*/
             }
         });
 
@@ -126,4 +104,4 @@ import java.util.Set;
     }
 
 
-}*/
+}

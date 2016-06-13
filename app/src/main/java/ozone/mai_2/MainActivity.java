@@ -41,7 +41,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         printComboSeekbar();
-        printTree();
+        /*printTree();*/
+        Intent intent = new Intent("android.intent.action.PROJECTS");
+        startActivityForResult(intent, 1);
     }
 
     @Override
@@ -168,7 +170,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     }
     private void printTree(){
-        TreeNode crRoot = TreeNode.root();
+       /* TreeNode crRoot = TreeNode.root();
 
         DefaultTreeHolder defItemCriterions = new DefaultTreeHolder(this, getWindow());
         DefaultTreeHolder.IconTreeItem item = new DefaultTreeHolder.IconTreeItem();
@@ -185,7 +187,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         final AndroidTreeView tView = new AndroidTreeView(this, crRoot);
         //tView.expandAll();
         RelativeLayout layout = (RelativeLayout)findViewById(R.id.main_relative_layout);
-        layout.addView(tView.getView());
+        layout.addView(tView.getView());*/
         /*layout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

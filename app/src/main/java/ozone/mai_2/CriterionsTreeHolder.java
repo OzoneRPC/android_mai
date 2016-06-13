@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -22,7 +23,6 @@ import java.util.Random;
 public class CriterionsTreeHolder extends TreeNode.BaseNodeViewHolder<CriterionsTreeHolder.IconTreeItem>{
     private Context currentContext;
     private Window currentWindow;
-    public static int count = 0;
     public CriterionsTreeHolder(Context context, Window window){
         super(context);
         this.currentContext = context;
@@ -57,14 +57,22 @@ public class CriterionsTreeHolder extends TreeNode.BaseNodeViewHolder<Criterions
 
                 CriterionsTreeHolder.IconTreeItem crItemIcon = new CriterionsTreeHolder.IconTreeItem();
                 TreeNode newNode = new TreeNode(crItemIcon).setViewHolder(new CriterionsTreeHolder(currentContext, currentWindow));
-                View newNodeView = newNode.getViewHolder().getView();
-                EditText textFromNewNode = (EditText)newNodeView.findViewById(R.id.criterion_add_text);
-                RelativeLayout.LayoutParams newParams = (RelativeLayout.LayoutParams) textFromNewNode.getLayoutParams();
-                newParams.leftMargin = curParams.leftMargin + 10;
-                textFromNewNode.setLayoutParams(newParams);
-                textFromNewNode.setText("Подкритерий " + node.getLevel());
+
+                View alternativeNode = newNode.getViewHolder().getView();
+
+                EditText alternativeText = (EditText)alternativeNode.findViewById(R.id.criterion_add_text);
+
+                Button add = (Button)alternativeNode.findViewById(R.id.add);
+
+                if(node.getLevel() > 1){
+                    add.setVisibility(View.INVISIBLE);
+                }
+
+                RelativeLayout.LayoutParams newParams = (RelativeLayout.LayoutParams)alternativeText.getLayoutParams();
+                newParams.leftMargin = curParams.leftMargin + 30;
+                alternativeText.setLayoutParams(newParams);
+                alternativeText.setText("Альтернатива");
                 node.addChild(newNode);
-                count++;
 
                 node.getViewHolder().getTreeView().expandLevel(node.getLevel());
 

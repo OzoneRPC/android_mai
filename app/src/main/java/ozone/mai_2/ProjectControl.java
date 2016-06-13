@@ -10,6 +10,7 @@ import android.widget.EditText;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import com.unnamed.b.atv.model.TreeNode;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,16 +28,15 @@ public class ProjectControl{
     protected static String KEY_PROJECTS = "projects";
     protected String existProjectsKey = "exitst_projects";
     protected String projectKey = "project";
-    public List<View> criterionsListView;
-    public List<View> alternativesListView;
+   /* public List<View> criterionsListView;
+    public List<View> alternativesListView;*/
     public MAI mai = new MAI();
-
 
     public ProjectControl(Activity activity){
         projects = activity.getSharedPreferences(KEY_PROJECTS, 0);
         //HashMap map = projects.mMap;
-        criterionsListView = new ArrayList<View>();
-        alternativesListView = new ArrayList<View>();
+        /*criterionsListView = new ArrayList<View>();
+        alternativesListView = new ArrayList<View>();*/
     }
     public Map getProjects(){
         return projects.getAll();
@@ -51,7 +51,7 @@ public class ProjectControl{
         editor.putStringSet(existProjectsKey, existProjects);
         editor.apply();
     }
-    public void saveProject(String name, String objective){
+    /*public void saveProject(String name, String objective){
         int criterionsCount = criterionsListView.size();
         int alternativesCount = alternativesListView.size();
         String[] criterions = new String[criterionsCount];
@@ -77,6 +77,15 @@ public class ProjectControl{
         editor.putString(name, gson.toJson(project, new TypeToken<Project>() {
         }.getType()));
         editor.apply();
+    }*/
+
+
+    public void saveProject(String name, String objective, TreeNode tree){
+        Project project = new Project();
+        project.name = name;
+        project.objective = objective;
+        project.tree = tree;
+
     }
     public void updateProject(Project project){
         SharedPreferences.Editor editor = projects.edit();
