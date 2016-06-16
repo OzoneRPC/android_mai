@@ -11,22 +11,15 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+
+import java.io.IOException;
+
 
 /**
  * Created by Ozone on 04.05.2016.
@@ -41,7 +34,7 @@ public class AddProjectDialog extends DialogFragment{
     private ProjectControl control;
     private TreeNode crRoot;
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
+    public Dialog onCreateDialog(Bundle savedInstanceState){
         //projects = getActivity().getSharedPreferences(KEY_PROJECTS, 0);
         control = new ProjectControl(getActivity());
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -51,16 +44,16 @@ public class AddProjectDialog extends DialogFragment{
 
         Context context = activity;
 
-        View view = inflater.inflate(R.layout.add_project, null);
+        final View view = inflater.inflate(R.layout.add_project, null);
 
         builder.setView(view);
-
 
         crRoot = TreeNode.root();
 
         DefaultTreeHolder defItemCriterions = new DefaultTreeHolder(context, activity.getWindow());
         DefaultTreeHolder.IconTreeItem item = new DefaultTreeHolder.IconTreeItem();
         item.text = "Критерии";
+
 
         TreeNode crParent = new TreeNode(item).setViewHolder(defItemCriterions);
 
@@ -77,14 +70,16 @@ public class AddProjectDialog extends DialogFragment{
         builder.setPositiveButton("Далее", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int id) {
-                /*String projectName = projectNameView.getText().toString();
-                String projectObjective = projectObjectiveView.getText().toString();
-                control.saveProject(projectName, projectObjective);
-                control.updateExistProjects(projectName);
-                Bundle b = new Bundle();
-                b.putString("project_name", projectName);
+                EditText project_name = (EditText)view.findViewById(R.id.projectName);
+                EditText project_objective = (EditText)view.findViewById(R.id.projectObjective);
 
-                Intent intent = new Intent("android.intent.action.CHOOSE_JUDGMENT");
+                control.saveProject(project_name.getText().toString(),
+                        project_objective.getText().toString(), crRoot.getChildren().get(0));
+
+
+                AddProjectDialog dialogNew = new AddProjectDialog();
+                dialogNew.show(getFragmentManager(), "dlg2");
+                /*Intent intent = new Intent("android.intent.action.CHOOSE_JUDGMENT");
                 intent.putExtras(b);
                 startActivity(intent);*/
             }
@@ -102,6 +97,4 @@ public class AddProjectDialog extends DialogFragment{
         });
         return builder.create();
     }
-
-
 }

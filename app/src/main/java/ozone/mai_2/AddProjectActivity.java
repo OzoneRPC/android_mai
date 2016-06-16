@@ -1,8 +1,11 @@
 package ozone.mai_2;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -27,19 +30,21 @@ public class AddProjectActivity extends AppCompatActivity {
     /*private List<View> criterionsListView;
     private List<View> alternativesListView;*/
     private ProjectControl control;
+    private TreeNode crRoot;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.add_project);
+
         control = new ProjectControl(this);
-        final EditText edit_name = (EditText)findViewById(R.id.projectName);
-        final EditText edit_obj = (EditText)findViewById(R.id.projectObjective);
-        final Button btn_save = (Button)findViewById(R.id.save);
-        TreeNode crRoot = TreeNode.root();
+
+
+        crRoot = TreeNode.root();
 
         DefaultTreeHolder defItemCriterions = new DefaultTreeHolder(this, getWindow());
         DefaultTreeHolder.IconTreeItem item = new DefaultTreeHolder.IconTreeItem();
         item.text = "Критерии";
+
 
         TreeNode crParent = new TreeNode(item).setViewHolder(defItemCriterions);
 
@@ -47,20 +52,22 @@ public class AddProjectActivity extends AppCompatActivity {
 
         final AndroidTreeView tView = new AndroidTreeView(this, crRoot);
 
+        final Button save = (Button) findViewById(R.id.save);
+
         RelativeLayout layout = (RelativeLayout)findViewById(R.id.add_project_tree_layout);
 
         layout.addView(tView.getView());
 
-        RelativeLayout main_layout = (RelativeLayout)findViewById(R.id.main_layout);
-        main_layout.setOnClickListener(new View.OnClickListener() {
+        save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (getCurrentFocus() instanceof EditText) {
-                    getCurrentFocus().clearFocus();
-                    InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-                }
+                EditText project_name = (EditText)findViewById(R.id.projectName);
+                EditText project_objective = (EditText)findViewById(R.id.projectObjective);
+
+                control.saveProject(project_name.getText().toString(),
+                        project_objective.getText().toString(), crRoot.getChildren().get(0));
             }
         });
+
     }
 }

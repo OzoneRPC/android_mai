@@ -9,11 +9,13 @@ import android.widget.TextView;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 
+import java.io.Serializable;
+
 /**
  * Created by Ozone on 28.05.2016.
  */
 
-public class DefaultTreeHolder extends TreeNode.BaseNodeViewHolder<DefaultTreeHolder.IconTreeItem> {
+public class DefaultTreeHolder extends TreeNode.BaseNodeViewHolder<DefaultTreeHolder.IconTreeItem> implements Serializable {
     private String text;
     private Context currentContext;
     private Window currentWindow;

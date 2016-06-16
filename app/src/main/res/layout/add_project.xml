@@ -37,5 +37,16 @@
         android:layout_marginTop="105dp"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"></RelativeLayout>
+    <Button
+        android:id="@+id/save"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/button_style"
+        android:enabled="true"
+        android:text="@string/save"
+        android:textColor="#6c6c6c"
+        android:visibility="visible"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true" />
 
 </RelativeLayout>

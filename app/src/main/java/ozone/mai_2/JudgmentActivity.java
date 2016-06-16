@@ -51,7 +51,7 @@ public class JudgmentActivity extends AppCompatActivity {
 
     }
     private void addComboSeekBar(final int row, final int column){
-        final View view = getLayoutInflater().inflate(R.layout.custom_seekbar, null);
+        /*final View view = getLayoutInflater().inflate(R.layout.custom_seekbar, null);
         ComboSeekBar comboSeekBar = (ComboSeekBar)view.findViewById(R.id.comboseekbar);
         TextView criterionA = (TextView)view.findViewById(R.id.criterion_A);
         TextView criterionB = (TextView)view.findViewById(R.id.criterion_B);
@@ -70,9 +70,9 @@ public class JudgmentActivity extends AppCompatActivity {
         comboSeekBar.setId(id);
         id++;
         comboSeekBar.setAdapter(points);
-        comboSeekBar.setSelection(4);
+        comboSeekBar.setSelection(4);*/
 
-        comboSeekBar.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        /*comboSeekBar.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v, int position, long position_id) {
                 double value = getComboSeebarValueByPosition(position);
                 double invertedValue;
@@ -96,17 +96,17 @@ public class JudgmentActivity extends AppCompatActivity {
                     });
                 }
             }
-        });
-        seekbarContainer.addView(view);
+        });*/
+        //seekbarContainer.addView(view);
     }
     private void criterions(){
-        int size = currentProject.criterionsMatrix.size();
+        /*int size = currentProject.criterionsMatrix.size();
         for(int i = 0; i < size-1; i++){
             for(int j = 1; j <= currentProject.criterionsMatrix.get(i).size() - 1 - i; j++ ){
                 addComboSeekBar(i , j+i);
                 notCompleted++;
             }
-        }
+        }*/
     }
     private int getComboSeebarValueByPosition(int position){
         int result = -1;

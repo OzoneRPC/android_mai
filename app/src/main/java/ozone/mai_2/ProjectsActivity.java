@@ -18,14 +18,16 @@ public class ProjectsActivity extends AppCompatActivity {
 
         Button button = (Button)findViewById(R.id.add_project);
 
-       /* button.setOnClickListener(new View.OnClickListener() {
+        /*button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent("android.intent.action.ADD_PROJECT");
                 startActivity(intent);
             }
         });*/
-        AddProjectDialog dialog = new AddProjectDialog();
-        dialog.show(getFragmentManager(), "dlg1");
+        Intent intent = new Intent("android.intent.action.ADD_PROJECT");
+        startActivity(intent);
+        /*AddProjectDialog dialog = new AddProjectDialog();
+        dialog.show(getFragmentManager(), "dlg1");*/
     }
 }
