@@ -34,9 +34,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/scrollView"
-        android:layout_above="@+id/save"
         android:layout_below="@+id/projectObjective"
-        android:layout_marginTop="10dp">
+        android:layout_marginTop="10dp"
+        style="@style/Base.Widget.AppCompat.Button.Borderless"
+        android:layout_above="@+id/saveAndContinue"
+        android:layout_marginBottom="10dp">
         <RelativeLayout
             android:id="@+id/add_project_tree_layout"
             android:layout_width="match_parent"
@@ -47,16 +49,27 @@
 
     <Button
         android:id="@+id/save"
-        android:layout_width="150dp"
+        android:layout_width="100dp"
         android:layout_height="wrap_content"
-        android:background="@drawable/button_style"
-        android:enabled="true"
         android:text="@string/save"
-        android:textColor="#6c6c6c"
-        android:visibility="visible"
-        android:layout_alignParentBottom="true"
-        android:layout_alignEnd="@+id/scrollView" />
+        android:textColor="@android:color/holo_blue_dark"
+        android:textSize="15dp"
+        style="@android:style/Widget.Holo.ActionButton.TextButton"
+        android:background="#00ffffff"
+        android:layout_below="@+id/scrollView"
+        android:layout_alignParentStart="true" />
 
+    <Button
+        android:id="@+id/saveAndContinue"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:text="@string/saveAndContinue"
+        android:textColor="@android:color/holo_blue_dark"
+        android:textSize="15dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignEnd="@+id/scrollView"
+        style="@android:style/Widget.Holo.ActionButton.TextButton"
+        android:background="#00ffffff" />
 
 
 </RelativeLayout>
