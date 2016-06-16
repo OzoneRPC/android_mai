@@ -34,7 +34,7 @@ public class JudgmentActivity extends AppCompatActivity {
 
         String nameFromExtras = this.getIntent().getExtras().getString("project_name");
 
-        currentProject = control.getProjectByName(nameFromExtras);
+        currentProject = control.getProject(nameFromExtras);
 
         Intent intent = getIntent();
         int type = intent.getIntExtra("type", -1);

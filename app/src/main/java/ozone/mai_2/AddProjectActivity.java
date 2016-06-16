@@ -66,6 +66,8 @@ public class AddProjectActivity extends AppCompatActivity {
 
                 control.saveProject(project_name.getText().toString(),
                         project_objective.getText().toString(), crRoot.getChildren().get(0));
+
+
             }
         });
 
