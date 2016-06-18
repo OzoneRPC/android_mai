@@ -1,5 +1,7 @@
 package ozone.mai_2;
 
+import com.unnamed.b.atv.model.TreeNode;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,15 +9,24 @@ import java.util.List;
  * Created by Ozone on 23.05.2016.
  */
 public class MAI {
-    public List<ArrayList<Double>> generateCriterionsMatrix(int size){
+    public List<ArrayList<Double>>  generateCriterionsMatrix(int size){
         return generateMatrix(size);
     }
-    public List<List<ArrayList<Double>>> generateAlternativesMatrix(int arrayCount, int vectorsCount){
-        List<List<ArrayList<Double>>> matrix = new ArrayList<>();
-        for(int i=0; i < arrayCount; i++){
-            matrix.add(generateMatrix(vectorsCount));
+    public List<List> generateAlternativesMatrix(TreeNode tree){
+
+
+
+
+        List <List> alternativesMatrixList = new ArrayList<>();
+
+        for(TreeNode criterionNode : tree.getChildren()){
+
+            List<ArrayList<Double>> alternativeMatrix = generateMatrix(criterionNode.getChildren().size());
+
+            alternativesMatrixList.add(alternativeMatrix);
         }
-        return matrix;
+
+        return alternativesMatrixList;
     }
     public List<ArrayList<Double>> generateMatrix(int size){
         List<ArrayList<Double>> matrix = new ArrayList<>();

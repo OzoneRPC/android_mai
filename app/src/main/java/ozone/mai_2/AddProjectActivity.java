@@ -3,6 +3,7 @@ package ozone.mai_2;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
@@ -52,13 +53,15 @@ public class AddProjectActivity extends AppCompatActivity {
 
         final AndroidTreeView tView = new AndroidTreeView(this, crRoot);
 
-        final Button save = (Button) findViewById(R.id.save);
 
         RelativeLayout layout = (RelativeLayout)findViewById(R.id.add_project_tree_layout);
 
         layout.addView(tView.getView());
 
-        save.setOnClickListener(new View.OnClickListener() {
+        final Button btnSave = (Button) findViewById(R.id.save);
+        final Button btnSaveAndContinue = (Button) findViewById(R.id.saveAndContinue);
+
+        btnSaveAndContinue.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 EditText project_name = (EditText)findViewById(R.id.projectName);
@@ -67,7 +70,9 @@ public class AddProjectActivity extends AppCompatActivity {
                 control.saveProject(project_name.getText().toString(),
                         project_objective.getText().toString(), crRoot.getChildren().get(0));
 
-
+                Intent intent = new Intent("android.intent.action.CHOOSE_JUDGMENT");
+                intent.putExtra("project_name", project_name.getText());
+                startActivityForResult(intent, 1);
             }
         });
 

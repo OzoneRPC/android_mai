@@ -1,13 +1,9 @@
 package ozone.mai_2;
 
 import android.app.Activity;
-import android.app.Dialog;
-import android.app.DialogFragment;
-import android.content.Context;
+
 import android.content.SharedPreferences;
-import android.content.res.Resources;
-import android.util.Base64;
-import android.view.View;
+
 import android.widget.EditText;
 
 import com.google.gson.Gson;
@@ -23,19 +19,12 @@ import com.google.gson.JsonSerializer;
 import com.google.gson.reflect.TypeToken;
 import com.unnamed.b.atv.model.TreeNode;
 
-import org.json.JSONArray;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+
+
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
+
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -89,6 +78,9 @@ public class ProjectControl {
         project.name = name;
         project.objective = objective;
         project.tree = tree;
+
+        project.criterionsMatrix = mai.generateCriterionsMatrix(tree.getChildren().size());
+        project.alternativesMaxtrix = mai.generateAlternativesMatrix(tree);
 
         String projectJson = gson.toJson(project, type_project);
 
