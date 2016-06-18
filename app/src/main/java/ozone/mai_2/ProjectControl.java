@@ -90,8 +90,9 @@ public class ProjectControl {
 
         updateExistProjectsList(name);
 
+
     }
-    public Project getProject(String name){
+    public Project getProjectByName(String name){
         Project project = null;
         String projectJson = projects.getString(name, null);
         if(projectJson != null){

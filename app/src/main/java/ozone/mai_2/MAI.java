@@ -12,12 +12,12 @@ public class MAI {
     public List<ArrayList<Double>>  generateCriterionsMatrix(int size){
         return generateMatrix(size);
     }
-    public List<List> generateAlternativesMatrix(TreeNode tree){
+    public List<List<ArrayList<Double>>> generateAlternativesMatrix(TreeNode tree){
 
 
 
 
-        List <List> alternativesMatrixList = new ArrayList<>();
+        List <List<ArrayList<Double>>> alternativesMatrixList = new ArrayList<>();
 
         for(TreeNode criterionNode : tree.getChildren()){
 

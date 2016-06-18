@@ -14,6 +14,6 @@ public class Project{
     public String objective;
     public TreeNode tree;
     public List<ArrayList<Double>> criterionsMatrix;
-    public List <List> alternativesMaxtrix;
+    public List <List<ArrayList<Double>>> alternativesMaxtrix;
 
 }

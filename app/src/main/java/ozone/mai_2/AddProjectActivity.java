@@ -71,7 +71,8 @@ public class AddProjectActivity extends AppCompatActivity {
                         project_objective.getText().toString(), crRoot.getChildren().get(0));
 
                 Intent intent = new Intent("android.intent.action.CHOOSE_JUDGMENT");
-                intent.putExtra("project_name", project_name.getText());
+                String name = project_name.getText().toString();
+                intent.putExtra("project_name", name);
                 startActivityForResult(intent, 1);
             }
         });

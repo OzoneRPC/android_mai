@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -34,7 +35,7 @@ public class JudgmentActivity extends AppCompatActivity {
 
         String nameFromExtras = this.getIntent().getExtras().getString("project_name");
 
-        currentProject = control.getProject(nameFromExtras);
+        currentProject = control.getProjectByName(nameFromExtras);
 
         Intent intent = getIntent();
         int type = intent.getIntExtra("type", -1);
@@ -51,12 +52,16 @@ public class JudgmentActivity extends AppCompatActivity {
 
     }
     private void addComboSeekBar(final int row, final int column){
-        /*final View view = getLayoutInflater().inflate(R.layout.custom_seekbar, null);
+        final View view = getLayoutInflater().inflate(R.layout.custom_seekbar, null);
         ComboSeekBar comboSeekBar = (ComboSeekBar)view.findViewById(R.id.comboseekbar);
         TextView criterionA = (TextView)view.findViewById(R.id.criterion_A);
         TextView criterionB = (TextView)view.findViewById(R.id.criterion_B);
-        criterionA.setText(currentProject.criterions[row]);
-        criterionB.setText(currentProject.criterions[column]);
+
+        EditText a = (EditText)currentProject.tree.getChildren().get(row).getViewHolder().getView().findViewById(R.id.criterion_add_text);
+        EditText b = (EditText)currentProject.tree.getChildren().get(column).getViewHolder().getView().findViewById(R.id.criterion_add_text);
+
+        criterionA.setText(a.getText().toString());
+        criterionB.setText(b.getText().toString());
         List<String> points = new ArrayList<>();
         points.add("9");
         points.add("7");
@@ -70,9 +75,9 @@ public class JudgmentActivity extends AppCompatActivity {
         comboSeekBar.setId(id);
         id++;
         comboSeekBar.setAdapter(points);
-        comboSeekBar.setSelection(4);*/
+        comboSeekBar.setSelection(4);
 
-        /*comboSeekBar.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        comboSeekBar.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v, int position, long position_id) {
                 double value = getComboSeebarValueByPosition(position);
                 double invertedValue;
@@ -96,17 +101,17 @@ public class JudgmentActivity extends AppCompatActivity {
                     });
                 }
             }
-        });*/
-        //seekbarContainer.addView(view);
+        });
+        seekbarContainer.addView(view);
     }
     private void criterions(){
-        /*int size = currentProject.criterionsMatrix.size();
+        int size = currentProject.criterionsMatrix.size();
         for(int i = 0; i < size-1; i++){
             for(int j = 1; j <= currentProject.criterionsMatrix.get(i).size() - 1 - i; j++ ){
                 addComboSeekBar(i , j+i);
                 notCompleted++;
             }
-        }*/
+        }
     }
     private int getComboSeebarValueByPosition(int position){
         int result = -1;
