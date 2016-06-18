@@ -6,9 +6,19 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text=""
-        android:id="@+id/criterion_A"
-        android:gravity="left" />
+        android:id="@+id/criterion_name"
+        android:gravity="top"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="item_a"
+        android:id="@+id/item_a"
+        android:gravity="left"
+        android:layout_below="@+id/criterion_name"
+        android:layout_alignParentStart="true" />
 
     <com.infteh.comboseekbar.ComboSeekBar
             xmlns:cbs="http://schemas.android.com/apk/res-auto"
@@ -17,16 +27,16 @@
             android:layout_height="wrap_content"
             cbs:myColor="@android:color/black"
             cbs:textSize="16sp"
-            android:layout_below="@+id/criterion_A"
-            android:layout_alignParentStart="true" />
+        android:layout_below="@+id/item_a"
+        android:layout_alignEnd="@+id/item_b" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text=""
-        android:id="@+id/criterion_B"
-        android:layout_alignParentTop="true"
+        android:text="item_b"
+        android:id="@+id/item_b"
+        android:layout_below="@+id/criterion_name"
         android:layout_alignParentEnd="true" />
 
 </RelativeLayout>
