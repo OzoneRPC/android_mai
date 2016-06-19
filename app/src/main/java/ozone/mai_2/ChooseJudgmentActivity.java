@@ -13,6 +13,8 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -62,23 +64,22 @@ public class ChooseJudgmentActivity extends AppCompatActivity {
 
         SharedPreferences projects = getSharedPreferences("projects", MODE_PRIVATE);
 
+        MAI mai = new MAI();
+
         String nameFromExtras = data.getExtras().getString("project_name");
-        Project changedProject = control.getProjectByName(nameFromExtras);
-        /*CharSequence pickedStation = "";
-        switch (resultCode){
-            case RESULT_OK:
-                pickedStation = (CharSequence)data.getStringExtra("station");
-                break;
-            case RESULT_CANCELED:
-                pickedStation = "Станций не выбрано";
+        Project project = control.getProjectByName(nameFromExtras);
+
+        ArrayList<Double> firstWmax = mai.getWmax(project.alternativesMaxtrix.get(0));
+
+        List<ArrayList<Double>> vectors = new ArrayList<>();
+        for(int i = 0; i < project.alternativesMaxtrix.size(); i++){
+            vectors.add(mai.getWmax(project.alternativesMaxtrix.get(i)));
         }
+        List<ArrayList<Double>> matrix = mai.makeVectorsMatrix(vectors);
+        List<ArrayList<Double>> Lmatrix = mai.makeLmatrix(vectors);
+        List<ArrayList<Double>> Smatrix = mai.makeSmatrix(vectors);
 
-        this.selectedStation = (String)pickedStation;
 
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putString(KEY_STATION, this.selectedStation);
-        editor.commit();
-        this.textView.setText(pickedStation);*/
 
     }
 }
