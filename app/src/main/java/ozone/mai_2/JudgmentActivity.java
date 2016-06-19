@@ -51,22 +51,22 @@ public class JudgmentActivity extends AppCompatActivity {
         }
 
     }
-    private void addComboSeekBar(final int row, final int column, final int parent){
+    private void addComboSeekBar(final int row, final int column, final int criterionNumber){
         final View view = getLayoutInflater().inflate(R.layout.custom_seekbar, null);
         ComboSeekBar comboSeekBar = (ComboSeekBar)view.findViewById(R.id.comboseekbar);
         TextView criterionName = (TextView)view.findViewById(R.id.criterion_name);
         TextView criterionA = (TextView)view.findViewById(R.id.item_a);
         TextView criterionB = (TextView)view.findViewById(R.id.item_b);
 
-        if(parent == -1) {
+        if(criterionNumber == -1) {
             EditText a = (EditText) currentProject.tree.getChildren().get(row).getViewHolder().getView().findViewById(R.id.criterion_add_text);
             EditText b = (EditText) currentProject.tree.getChildren().get(column).getViewHolder().getView().findViewById(R.id.criterion_add_text);
             criterionA.setText(a.getText().toString());
             criterionB.setText(b.getText().toString());
         }else{
-            EditText nameEdit = (EditText) currentProject.tree.getChildren().get(parent).getViewHolder().getView().findViewById(R.id.criterion_add_text);
-            EditText a = (EditText) currentProject.tree.getChildren().get(parent).getChildren().get(row).getViewHolder().getView().findViewById(R.id.criterion_add_text);
-            EditText b = (EditText) currentProject.tree.getChildren().get(parent).getChildren().get(column).getViewHolder().getView().findViewById(R.id.criterion_add_text);
+            EditText nameEdit = (EditText) currentProject.tree.getChildren().get(criterionNumber).getViewHolder().getView().findViewById(R.id.criterion_add_text);
+            EditText a = (EditText) currentProject.tree.getChildren().get(criterionNumber).getChildren().get(row).getViewHolder().getView().findViewById(R.id.criterion_add_text);
+            EditText b = (EditText) currentProject.tree.getChildren().get(criterionNumber).getChildren().get(column).getViewHolder().getView().findViewById(R.id.criterion_add_text);
             criterionName.setText(nameEdit.getText().toString());
             criterionA.setText(a.getText().toString());
             criterionB.setText(b.getText().toString());
@@ -98,8 +98,13 @@ public class JudgmentActivity extends AppCompatActivity {
                 }else{
                     invertedValue = 1.0/value;
                 }
-                currentProject.criterionsMatrix.get(row).set(column, value);
-                currentProject.criterionsMatrix.get(column).set(row, invertedValue);
+                if(criterionNumber == -1) {
+                    currentProject.criterionsMatrix.get(row).set(column, value);
+                    currentProject.criterionsMatrix.get(column).set(row, invertedValue);
+                }else{
+                    currentProject.alternativesMaxtrix.get(criterionNumber).get(row).set(column, value);
+                    currentProject.alternativesMaxtrix.get(criterionNumber).get(column).set(row, invertedValue);
+                }
                 notCompleted--;
                 if(notCompleted == 0){
                     Button save = (Button)findViewById(R.id.save);
@@ -128,8 +133,8 @@ public class JudgmentActivity extends AppCompatActivity {
         for(int i = 0; i < currentProject.alternativesMaxtrix.size(); i++){
 
             for(int j = 0; j < currentProject.alternativesMaxtrix.get(i).size() - 1; j++){
-                for(int k = 0; k < currentProject.alternativesMaxtrix.get(i).get(k).size() - 1 - k; k++){
-                    addComboSeekBar(j , k+i, i);
+                for(int k = 1; k <= currentProject.alternativesMaxtrix.get(i).get(j).size() - 1 - j; k++){
+                    addComboSeekBar(j , k+j, i);
                     notCompleted++;
                 }
             }

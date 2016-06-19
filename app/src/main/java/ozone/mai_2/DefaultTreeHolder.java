@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.unnamed.b.atv.model.TreeNode;
@@ -19,6 +20,7 @@ public class DefaultTreeHolder extends TreeNode.BaseNodeViewHolder<DefaultTreeHo
     private String text;
     private Context currentContext;
     private Window currentWindow;
+    public int index = 1;
     public DefaultTreeHolder(Context context, Window window) {
         super(context);
         currentContext = context;
@@ -39,7 +41,11 @@ public class DefaultTreeHolder extends TreeNode.BaseNodeViewHolder<DefaultTreeHo
             @Override
             public void onClick(View v) {
                 CriterionsTreeHolder.IconTreeItem crItemIcon = new CriterionsTreeHolder.IconTreeItem();
-                node.addChildren(new TreeNode(crItemIcon).setViewHolder(new CriterionsTreeHolder(currentContext, currentWindow)));
+                TreeNode newNode = new TreeNode(crItemIcon).setViewHolder(new CriterionsTreeHolder(currentContext, currentWindow));
+                node.addChildren(newNode);
+                EditText criterionNameEdit = (EditText)newNode.getViewHolder().getView().findViewById(R.id.criterion_add_text);
+                criterionNameEdit.setText(criterionNameEdit.getText().toString()+" "+index);
+                index++;
                 tree.expandLevel(node.getLevel());
             }
         });

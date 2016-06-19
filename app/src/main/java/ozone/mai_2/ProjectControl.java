@@ -106,6 +106,11 @@ public class ProjectControl {
 
     public void updateProject(Project project){
         SharedPreferences.Editor editor = projects.edit();
+
+        GsonBuilder builder = new GsonBuilder();
+        builder.registerTypeAdapter(TreeNode.class, new treeSerializer());
+        Gson gson = builder.create();
+
         editor.putString(project.name, gson.toJson(project, new TypeToken<Project>() {
         }.getType()));
         editor.apply();

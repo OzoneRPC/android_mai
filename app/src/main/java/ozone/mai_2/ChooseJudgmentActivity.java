@@ -63,7 +63,7 @@ public class ChooseJudgmentActivity extends AppCompatActivity {
         SharedPreferences projects = getSharedPreferences("projects", MODE_PRIVATE);
 
         String nameFromExtras = data.getExtras().getString("project_name");
-        //Project changedProject = control.getProject(nameFromExtras);
+        Project changedProject = control.getProjectByName(nameFromExtras);
         /*CharSequence pickedStation = "";
         switch (resultCode){
             case RESULT_OK:

@@ -23,6 +23,7 @@ import java.util.Random;
 public class CriterionsTreeHolder extends TreeNode.BaseNodeViewHolder<CriterionsTreeHolder.IconTreeItem>{
     private Context currentContext;
     private Window currentWindow;
+    public int index = 1;
     public CriterionsTreeHolder(Context context, Window window){
         super(context);
         this.currentContext = context;
@@ -48,6 +49,7 @@ public class CriterionsTreeHolder extends TreeNode.BaseNodeViewHolder<Criterions
             public void onClick(View v) {
                 node.getParent().deleteChild(node);
                 node.getViewHolder().getTreeView().expandLevel(node.getParent().getLevel());
+                index--;
             }
         });
         add.setOnClickListener(new View.OnClickListener() {
@@ -71,7 +73,8 @@ public class CriterionsTreeHolder extends TreeNode.BaseNodeViewHolder<Criterions
                 RelativeLayout.LayoutParams newParams = (RelativeLayout.LayoutParams)alternativeText.getLayoutParams();
                 newParams.leftMargin = curParams.leftMargin + 30;
                 alternativeText.setLayoutParams(newParams);
-                alternativeText.setText("Альтернатива");
+                alternativeText.setText("Альтернатива "+index);
+                index++;
                 node.addChild(newNode);
 
                 node.getViewHolder().getTreeView().expandLevel(node.getLevel());
