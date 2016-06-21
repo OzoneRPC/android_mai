@@ -199,6 +199,31 @@ public class MAI {
         }
         return matrix;
     }
+    public List<ArrayList<Double>> makeBmatrix(List<ArrayList<Double>> vectors){
+        double Wsum = 0.0;
+        int alternativesCount = 0;
+        for (int i = 0; i < vectors.size(); i++){
+            for (int j=0; j < vectors.get(i).size(); j++){
+                Wsum += vectors.get(i).get(j);
+                alternativesCount++;
+            }
+        }
+        List<ArrayList<Double>> matrix = new ArrayList<>();
+        for(int i = 0; i < alternativesCount; i++) {
+
+            ArrayList<Double> row = new ArrayList<>();
+            for(int j=0; j < alternativesCount; j++){
+                if(i == j){
+                    row.add(Wsum);
+                }else{
+                    double num = 0;
+                    row.add(num);
+                }
+            }
+            matrix.add(row);
+        }
+        return matrix;
+    }
     public double getVectorsSum(ArrayList<Double> vector){
         double sum = 0;
         for (int i = 0; i < vector.size(); i++){
@@ -206,5 +231,6 @@ public class MAI {
         }
         return sum;
     }
+
 
 }

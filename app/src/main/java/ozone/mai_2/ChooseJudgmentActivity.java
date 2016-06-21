@@ -78,7 +78,7 @@ public class ChooseJudgmentActivity extends AppCompatActivity {
 
         List<ArrayList<Double>> matrix = mai.makeVectorsMatrix(vectors);
         List<ArrayList<Double>> Lmatrix = mai.makeLmatrix(vectors);
-        List<ArrayList<Double>> Smatrix = mai.makeSmatrix(vectors);
+        List<ArrayList<Double>> Bmatrix = mai.makeBmatrix(vectors);
 
 
 
