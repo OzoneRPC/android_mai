@@ -46,15 +46,23 @@ public class MAI {
         return matrix;
     }
     public ArrayList<Double> getWmax(List<ArrayList<Double>> A){
-        List<Double> W = new ArrayList<>(A.size());
-        List<Double> Wnew =  new ArrayList<>(A.size());
-        List<ArrayList<Double>> tempA = A;
+        List<Double> W = new ArrayList<>();
+        List<Double> Wnew =  new ArrayList<>();
+        List<ArrayList<Double>> tempA = new ArrayList<>();
+        for (int i = 0; i < A.size(); i++){
+            ArrayList<Double> row = new ArrayList<>();
+            for (int j = 0; j < A.get(i).size(); j++){
+                row.add(A.get(i).get(j));
+            }
+            tempA.add(row);
+        }
+
         W = calculateWmax(tempA);
         while(true){
             tempA = multiplyMaxtix(tempA, tempA);
             Wnew = calculateWmax(tempA);
             if(compareVectors(W, Wnew)){
-                return (ArrayList)Wnew;
+                return (ArrayList<Double>)Wnew;
             }else{
                 W = Wnew;
             }
@@ -71,7 +79,7 @@ public class MAI {
         for(int arrayIndex = 0; arrayIndex < length; arrayIndex++){
             vectorSum = 0;
             for(int vectorsCount = 0; vectorsCount < A.get(arrayIndex).size(); vectorsCount++){
-                vectorSum+= A.get(arrayIndex).get(vectorsCount);
+                vectorSum += A.get(arrayIndex).get(vectorsCount);
             }
             Ae.add(arrayIndex, vectorSum);
         }
@@ -91,13 +99,22 @@ public class MAI {
         int mB = B.size();
         int nB = B.get(0).size();
         if (nA != mB) throw new RuntimeException("Illegal matrix dimensions.");
-        List<ArrayList<Double>> C =  A;
+        List<ArrayList<Double>> C =  new ArrayList<>();
 
+        for(int i =0; i < mA; i++){
+            ArrayList<Double> row = new ArrayList<>();
+            for(int j = 0; j < nB; j++){
+                double num = 0.0;
+                row.add(num);
+            }
+            C.add(row);
+        }
         for (int i = 0; i < mA; i++) {
             for (int j = 0; j < nB; j++) {
                 for (int k = 0; k < nA; k++) {
                     double mult = A.get(i).get(k) * B.get(k).get(j);
-                    C.get(i).set(j, mult);
+                    double oldVal = C.get(i).get(j);
+                    C.get(i).set(j, oldVal+mult);
                 }
             }
         }

@@ -75,6 +75,7 @@ public class ChooseJudgmentActivity extends AppCompatActivity {
         for(int i = 0; i < project.alternativesMaxtrix.size(); i++){
             vectors.add(mai.getWmax(project.alternativesMaxtrix.get(i)));
         }
+
         List<ArrayList<Double>> matrix = mai.makeVectorsMatrix(vectors);
         List<ArrayList<Double>> Lmatrix = mai.makeLmatrix(vectors);
         List<ArrayList<Double>> Smatrix = mai.makeSmatrix(vectors);
