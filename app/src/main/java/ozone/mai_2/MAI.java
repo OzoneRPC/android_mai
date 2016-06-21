@@ -1,5 +1,7 @@
 package ozone.mai_2;
 
+import android.widget.ArrayAdapter;
+
 import com.unnamed.b.atv.model.TreeNode;
 
 import java.lang.reflect.Array;
@@ -228,6 +230,39 @@ public class MAI {
         double sum = 0;
         for (int i = 0; i < vector.size(); i++){
             sum += vector.get(i);
+        }
+        return sum;
+    }
+    public double getCR(List<ArrayList<Double>> matrix, ArrayList<Double> wmax){
+        double[] RI = {0.0,0.0, 0.58, 0.9, 1.12, 1.24, 1.32, 1.41,1.45,1.49}; // Ранг матрицы не должен быть меньше 3, ибо получится деление на ноль
+        int matrixRang = matrix.size()-1;
+        double lambdaMax = getLambdaMax(matrix, wmax);
+        double CI = (lambdaMax - (double) matrixRang)/ (matrixRang);
+        if(matrixRang > RI.length){
+            matrixRang = RI.length-1;
+        }
+        return CI/RI[matrixRang];
+    }
+    public double getLambdaMax(List<ArrayList<Double>> matrix, ArrayList<Double> wmax){
+        double vectorSum = 0.0;
+        ArrayList<Double> tempA = new ArrayList<>();
+        for (int i=0; i < matrix.size(); i++){
+            double num = 0.0;
+            tempA.add(num);
+        }
+        for(int arrayIndex = 0; arrayIndex < matrix.size(); arrayIndex++){
+            vectorSum = 0;
+            for(int vectorsCount = 0; vectorsCount < matrix.get(arrayIndex).size(); vectorsCount++){
+                vectorSum+=matrix.get(vectorsCount).get(arrayIndex);
+            }
+            tempA.set(arrayIndex, vectorSum);
+        }
+        return multipyVectors(tempA, wmax);
+    }
+    public double multipyVectors(ArrayList<Double> vectorA, ArrayList<Double> vectorB){
+        double sum = 0.0;
+        for(int i=0; i < vectorA.size(); i++){
+            sum += vectorA.get(i)*vectorB.get(i);
         }
         return sum;
     }
