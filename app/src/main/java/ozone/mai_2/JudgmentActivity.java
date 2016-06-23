@@ -1,5 +1,6 @@
 package ozone.mai_2;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -26,12 +27,14 @@ public class JudgmentActivity extends AppCompatActivity {
     private int notCompleted = 0;
     private LinearLayout seekbarContainer;
     private ProjectControl control;
+    private static ArrayList<Activity> activities=new ArrayList<Activity>();
+
     private int judgType;
     private boolean changed;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.judgment);
-
+        activities.add(this);
         control = new ProjectControl(this);
         seekbarContainer = (LinearLayout)findViewById(R.id.comboseekbar_l_laylout);
 
@@ -77,15 +80,15 @@ public class JudgmentActivity extends AppCompatActivity {
         if(criterionNumber == -1) {
             EditText a = (EditText) currentProject.tree.getChildren().get(row).getViewHolder().getView().findViewById(R.id.criterion_add_text);
             EditText b = (EditText) currentProject.tree.getChildren().get(column).getViewHolder().getView().findViewById(R.id.criterion_add_text);
-            criterionA.setText(a.getText().toString());
-            criterionB.setText(b.getText().toString());
+            criterionA.append(a.getText().toString().replace("\"", "").replace("\\", ""));
+            criterionB.append(b.getText().toString().replace("\"", "").replace("\\", ""));
         }else{
             EditText nameEdit = (EditText) currentProject.tree.getChildren().get(criterionNumber).getViewHolder().getView().findViewById(R.id.criterion_add_text);
             EditText a = (EditText) currentProject.tree.getChildren().get(criterionNumber).getChildren().get(row).getViewHolder().getView().findViewById(R.id.criterion_add_text);
             EditText b = (EditText) currentProject.tree.getChildren().get(criterionNumber).getChildren().get(column).getViewHolder().getView().findViewById(R.id.criterion_add_text);
-            criterionName.setText(nameEdit.getText());
-            criterionA.setText(a.getText());
-            criterionB.setText(b.getText());
+            criterionName.setText(nameEdit.getText().toString().replace("\"", "").replace("\\", ""));
+            criterionA.append(a.getText().toString().replace("\"", "").replace("\\", ""));
+            criterionB.append(b.getText().toString().replace("\"", "").replace("\\", ""));
         }
 
 
@@ -198,6 +201,44 @@ public class JudgmentActivity extends AppCompatActivity {
         }
         return result;
     }
+    public int getComboSeebarValueByPositionFull(int position){
+        int result = -1;
+        switch (position){
+            case 0:
+            case 16:
+                result = 9;
+                break;
+            case 1:
+            case 15:
+                result = 8;
+                break;
+            case 2:
+            case 14:
+                result = 7;
+                break;
+            case 3:
+            case 13:
+                result = 6;
+                break;
+            case 4:
+            case 12:
+                result = 5;
+                break;
+            case 5:
+            case 11:
+                result = 4;
+                break;
+            case 6:
+            case 10:
+                result = 3;
+                break;
+            case 7:
+            case 9:
+                result = 2;
+                break;
+        }
+        return result;
+    }
         @Override
     public void onBackPressed() {
         judgType = -1;
@@ -212,5 +253,11 @@ public class JudgmentActivity extends AppCompatActivity {
         intent.putExtra("completed_type",judgType);
         setResult(RESULT_OK, intent);
         finish();
+    }
+    @Override
+    public void onDestroy()
+    {
+        super.onDestroy();
+        activities.remove(this);
     }
 }

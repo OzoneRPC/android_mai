@@ -100,7 +100,9 @@ public class MAI {
         int nA = A.get(0).size();
         int mB = B.size();
         int nB = B.get(0).size();
-        if (nA != mB) throw new RuntimeException("Illegal matrix dimensions.");
+        if (nA != mB) {
+            throw new RuntimeException("Illegal matrix dimensions.");
+        }
         List<ArrayList<Double>> C =  new ArrayList<>();
 
         for(int i =0; i < mA; i++){
@@ -235,13 +237,13 @@ public class MAI {
     }
     public double getCR(List<ArrayList<Double>> matrix, ArrayList<Double> wmax){
         double[] RI = {0.0,0.0, 0.58, 0.9, 1.12, 1.24, 1.32, 1.41,1.45,1.49}; // Ранг матрицы не должен быть меньше 3, ибо получится деление на ноль
-        int matrixRang = matrix.size()-1;
+        int matrixRang = matrix.size();
         double lambdaMax = getLambdaMax(matrix, wmax);
-        double CI = (lambdaMax - (double) matrixRang)/ (matrixRang);
+        double CI = (lambdaMax - (double) matrixRang)/ ((double)matrixRang - 1.0);
         if(matrixRang > RI.length){
-            matrixRang = RI.length-1;
+            matrixRang = RI.length;
         }
-        return CI/RI[matrixRang];
+        return CI/RI[matrixRang-1];
     }
     public double getLambdaMax(List<ArrayList<Double>> matrix, ArrayList<Double> wmax){
         double vectorSum = 0.0;
@@ -265,6 +267,20 @@ public class MAI {
             sum += vectorA.get(i)*vectorB.get(i);
         }
         return sum;
+    }
+    public ArrayList<Double> multiplyVector(List<ArrayList<Double>> A, ArrayList<Double> x) {
+        ArrayList<Double> result = new ArrayList<>();
+        for(int i=0; i < A.size(); i++){
+            result.add(0.0);
+        }
+
+        for(int i = 0; i < A.size(); i++){
+            for(int w = 0; w < A.get(0).size(); w++){
+                double val = result.get(i) + (A.get(i).get(w) * x.get(w));
+                result.set(i, val);
+            }
+        }
+        return result;
     }
 
 

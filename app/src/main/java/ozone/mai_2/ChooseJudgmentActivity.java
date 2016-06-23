@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
@@ -49,6 +50,8 @@ public class ChooseJudgmentActivity extends AppCompatActivity {
                 intent.putExtra("type", CRITERIONS);
                 if(criterionsMatrixChanged){
                     intent.putExtra("changed", true);
+                }else{
+                    intent.putExtra("changed", false);
                 }
                 startActivityForResult(intent, 1);
             }
@@ -59,6 +62,8 @@ public class ChooseJudgmentActivity extends AppCompatActivity {
             public void onClick(View v){
                 if(alternativeMatrixChanged){
                     intent.putExtra("changed", true);
+                }else{
+                    intent.putExtra("changed", false);
                 }
                 intent.putExtra("type",ALTERNATIVES);
                 startActivityForResult(intent,1);
@@ -81,24 +86,89 @@ public class ChooseJudgmentActivity extends AppCompatActivity {
                 alternativeMatrixChanged = true;
                 break;
         }
-        if(criterionsMatrixChanged && alternativeMatrixChanged) {
-            SharedPreferences projects = getSharedPreferences("projects", MODE_PRIVATE);
+        SharedPreferences projects = getSharedPreferences("projects", MODE_PRIVATE);
 
-            MAI mai = new MAI();
+        MAI mai = new MAI();
 
-            Project project = control.getProjectByName(nameFromExtras);
+        Project project = control.getProjectByName(nameFromExtras);
 
-            ArrayList<Double> firstWmax = mai.getWmax(project.alternativesMaxtrix.get(0));
+        boolean criterionsCrIsNormal = false;
+        boolean alternativesCrIsNormal = true;
+        ArrayList<Double> criterionsWmax = new ArrayList<Double>();
+        if(criterionsMatrixChanged) {
+            criterionsWmax = mai.getWmax(project.criterionsMatrix);
 
-            List<ArrayList<Double>> vectors = new ArrayList<>();
-            for (int i = 0; i < project.alternativesMaxtrix.size(); i++) {
-                vectors.add(mai.getWmax(project.alternativesMaxtrix.get(i)));
+            double cr = mai.getCR(project.criterionsMatrix, criterionsWmax);
+
+            if(cr < 0.1){
+                criterionsCrIsNormal = true;
             }
+            TextView criterionResultCr = (TextView) findViewById(R.id.result_cr);
 
+            criterionResultCr.setText("Индекс согласованности: " + cr);
+        }
+        List<ArrayList<Double>> vectors = new ArrayList<>();
+
+        if(alternativeMatrixChanged){
+            TextView alternativeCr = (TextView)findViewById(R.id.alternatives_cr);
+            alternativeCr.setText("");
+            for (int i = 0; i < project.alternativesMaxtrix.size(); i++) {
+                ArrayList<Double> alternativeWmax = mai.getWmax(project.alternativesMaxtrix.get(i));
+                double cr = mai.getCR(project.alternativesMaxtrix.get(i), alternativeWmax);
+                if(cr > 0.1){
+                    EditText textfield = (EditText) project.tree.getChildren().get(i).getViewHolder().getView().findViewById(R.id.criterion_add_text);
+                    String matrixName = textfield.getText().toString().replace("\"", "").replace("\\","");
+                    alternativeCr.append("Индекс согласованности у критерия " + matrixName + " - " + cr + "\n");
+                    alternativesCrIsNormal = false;
+                }
+                vectors.add(alternativeWmax);
+            }
+        }else{
+            alternativesCrIsNormal = false;
+        }
+        if(criterionsCrIsNormal && alternativesCrIsNormal){
             List<ArrayList<Double>> matrix = mai.makeVectorsMatrix(vectors);
             List<ArrayList<Double>> Lmatrix = mai.makeLmatrix(vectors);
             List<ArrayList<Double>> Bmatrix = mai.makeBmatrix(vectors);
+
+            List<ArrayList<Double>> matrixMultiplyFirst = mai.multiplyMaxtix(matrix, Lmatrix);
+            List<ArrayList<Double>> matrixMultiplySecond = mai.multiplyMaxtix(Bmatrix, matrixMultiplyFirst);
+
+            ArrayList<Double> result = mai.multiplyVector(matrixMultiplySecond, criterionsWmax);
+
+            ArrayList<Integer> creterionsIdMap = new ArrayList<>();
+            for(int i = 0; i < project.tree.getChildren().size(); i++){
+                for (int j = 0; j < project.tree.getChildren().get(i).getChildren().size(); j++){
+                    creterionsIdMap.add(i);
+                }
+            }
+            TextView resultText = (TextView)findViewById(R.id.result_text);
+
+            int lastPos = 0;
+            int alternativeLastPos = 0;
+            double maxValue = 0.0;
+            for(int i=0 ; i< result.size(); i++){
+                if(result.get(i) > maxValue){
+                    maxValue = result.get(i);
+                    alternativeLastPos++;
+                    if(lastPos != i){
+                        alternativeLastPos = 0;
+                    }
+                    lastPos = i;
+                }
+            }
+            EditText alternativeName = (EditText)project.tree.getChildren().get(creterionsIdMap.get(lastPos)).getChildren().get(alternativeLastPos).getViewHolder().getView().findViewById(R.id.criterion_add_text);
+            EditText criterion = (EditText)project.tree.getChildren().get(creterionsIdMap.get(lastPos)).getViewHolder().getView().findViewById(R.id.criterion_add_text);
+            String name = alternativeName.getText().toString();
+            String criterionName = criterion.getText().toString();
+            //resultText.setText("Наиболее оптимальной является альтернатива "+ name + "");
+
         }
+            /*for(int i =0; i < vectors.size(); i ++){
+                double cr = mai.getCR(project.alternativesMaxtrix.get(i), vectors.get(i));
+            }*/
+
+
 
 
     }

@@ -39,7 +39,7 @@ public class CriterionsTreeHolder extends TreeNode.BaseNodeViewHolder<Criterions
         final TextView add = (TextView)view.findViewById(R.id.add);
         final TextView delete = (TextView)view.findViewById(R.id.delete);
 
-        criterion_add_text.setText("Критерий");
+        criterion_add_text.setText(R.string.criterion);
 
         /*Random r = new Random();
         criterion_add_text.setId(r.nextInt(80 - 65) + 65);*/
@@ -73,7 +73,8 @@ public class CriterionsTreeHolder extends TreeNode.BaseNodeViewHolder<Criterions
                 RelativeLayout.LayoutParams newParams = (RelativeLayout.LayoutParams)alternativeText.getLayoutParams();
                 newParams.leftMargin = curParams.leftMargin + 30;
                 alternativeText.setLayoutParams(newParams);
-                alternativeText.setText("Альтернатива "+index);
+                CharSequence alternative = "Альтернатива";
+                alternativeText.setText(alternative + " " +index);
                 index++;
                 node.addChild(newNode);
 

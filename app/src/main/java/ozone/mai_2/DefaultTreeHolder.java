@@ -44,7 +44,7 @@ public class DefaultTreeHolder extends TreeNode.BaseNodeViewHolder<DefaultTreeHo
                 TreeNode newNode = new TreeNode(crItemIcon).setViewHolder(new CriterionsTreeHolder(currentContext, currentWindow));
                 node.addChildren(newNode);
                 EditText criterionNameEdit = (EditText)newNode.getViewHolder().getView().findViewById(R.id.criterion_add_text);
-                criterionNameEdit.setText(criterionNameEdit.getText().toString()+" "+index);
+                criterionNameEdit.setText(criterionNameEdit.getText() +" "+index);
                 index++;
                 tree.expandLevel(node.getLevel());
             }
