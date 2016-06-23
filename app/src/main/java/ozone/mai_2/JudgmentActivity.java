@@ -26,6 +26,8 @@ public class JudgmentActivity extends AppCompatActivity {
     private int notCompleted = 0;
     private LinearLayout seekbarContainer;
     private ProjectControl control;
+    private int judgType;
+    private boolean changed;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.judgment);
@@ -38,13 +40,27 @@ public class JudgmentActivity extends AppCompatActivity {
         currentProject = control.getProjectByName(nameFromExtras);
 
         Intent intent = getIntent();
-        int type = intent.getIntExtra("type", -1);
-        switch (type){
+        judgType  = intent.getIntExtra("type", -1);
+        changed = intent.getBooleanExtra("changed", false);
+        switch (judgType){
             case 0:
+                if(!changed) {
+                    currentProject.criterionsPositions = control.initializePositionsList(currentProject.criterionsMatrix.size());
+                }
                 setTitle(R.string.judgment_criterions_title);
                 criterions();
                 break;
             case 1:
+                int alternativesCount = 0;
+                if(!changed) {
+                    for (int i = 0; i < currentProject.alternativesMaxtrix.size(); i++) {
+
+                        for (int j = 0; j < currentProject.alternativesMaxtrix.get(i).size(); j++) {
+                            alternativesCount++;
+                        }
+                    }
+                    currentProject.alternativesPostions = control.initializePositionsList(alternativesCount);
+                }
                 setTitle(R.string.judgment_alternatives_title);
                 alternatives();
                 break;
@@ -67,9 +83,9 @@ public class JudgmentActivity extends AppCompatActivity {
             EditText nameEdit = (EditText) currentProject.tree.getChildren().get(criterionNumber).getViewHolder().getView().findViewById(R.id.criterion_add_text);
             EditText a = (EditText) currentProject.tree.getChildren().get(criterionNumber).getChildren().get(row).getViewHolder().getView().findViewById(R.id.criterion_add_text);
             EditText b = (EditText) currentProject.tree.getChildren().get(criterionNumber).getChildren().get(column).getViewHolder().getView().findViewById(R.id.criterion_add_text);
-            criterionName.setText(nameEdit.getText().toString());
-            criterionA.setText(a.getText().toString());
-            criterionB.setText(b.getText().toString());
+            criterionName.setText(nameEdit.getText());
+            criterionA.setText(a.getText());
+            criterionB.setText(b.getText());
         }
 
 
@@ -84,12 +100,28 @@ public class JudgmentActivity extends AppCompatActivity {
         points.add("7");
         points.add("9");
         comboSeekBar.setId(id);
-        id++;
         comboSeekBar.setAdapter(points);
-        comboSeekBar.setSelection(4);
+        int selection;
+
+        if(changed){
+            if(judgType == 0){
+                selection = currentProject.criterionsPositions.get(id);
+            }else{
+                selection = currentProject.alternativesPostions.get(id);
+            }
+        }else{
+            selection = 4;
+        }
+        comboSeekBar.setSelection(selection);
 
         comboSeekBar.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v, int position, long position_id) {
+
+                if(judgType == 0){
+                    currentProject.criterionsPositions.set(v.getId(), position);
+                }else{
+                    currentProject.alternativesPostions.set(v.getId(), position);
+                }
                 double value = getComboSeebarValueByPosition(position);
                 double invertedValue;
                 if(position < 4){
@@ -106,7 +138,7 @@ public class JudgmentActivity extends AppCompatActivity {
                     currentProject.alternativesMaxtrix.get(criterionNumber).get(column).set(row, invertedValue);
                 }
                 notCompleted--;
-                if(notCompleted == 0){
+                if(notCompleted == 0 || changed){
                     Button save = (Button)findViewById(R.id.save);
                     save.setVisibility(View.VISIBLE);
                     save.setOnClickListener(new View.OnClickListener(){
@@ -118,6 +150,7 @@ public class JudgmentActivity extends AppCompatActivity {
                 }
             }
         });
+        id++;
         seekbarContainer.addView(view);
     }
     private void criterions(){
@@ -165,8 +198,9 @@ public class JudgmentActivity extends AppCompatActivity {
         }
         return result;
     }
-    @Override
+        @Override
     public void onBackPressed() {
+        judgType = -1;
         saveAndExit();
         finish();
     }
@@ -175,6 +209,7 @@ public class JudgmentActivity extends AppCompatActivity {
 
         Intent intent = new Intent();
         intent.putExtra("project_name", currentProject.name);
+        intent.putExtra("completed_type",judgType);
         setResult(RESULT_OK, intent);
         finish();
     }

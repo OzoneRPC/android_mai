@@ -15,5 +15,6 @@ public class Project{
     public TreeNode tree;
     public List<ArrayList<Double>> criterionsMatrix;
     public List <List<ArrayList<Double>>> alternativesMaxtrix;
-
+    public List<Integer> criterionsPositions;
+    public List<Integer> alternativesPostions;
 }

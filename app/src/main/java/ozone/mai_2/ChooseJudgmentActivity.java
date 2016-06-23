@@ -24,6 +24,8 @@ public class ChooseJudgmentActivity extends AppCompatActivity {
     private int CRITERIONS = 0;
     private int ALTERNATIVES = 1;
     private ProjectControl control;
+    private boolean criterionsMatrixChanged = false;
+    private boolean alternativeMatrixChanged = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,13 +40,16 @@ public class ChooseJudgmentActivity extends AppCompatActivity {
 
 
 
-        Button criterionsJudgment = (Button)findViewById(R.id.button_judgment_criterions);
+        final Button criterionsJudgment = (Button)findViewById(R.id.button_judgment_criterions);
         Button alternativesJudgment = (Button)findViewById(R.id.button_judgment_alternatives);
 
         criterionsJudgment.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
                 intent.putExtra("type", CRITERIONS);
+                if(criterionsMatrixChanged){
+                    intent.putExtra("changed", true);
+                }
                 startActivityForResult(intent, 1);
             }
         });
@@ -52,6 +57,9 @@ public class ChooseJudgmentActivity extends AppCompatActivity {
         alternativesJudgment.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
+                if(alternativeMatrixChanged){
+                    intent.putExtra("changed", true);
+                }
                 intent.putExtra("type",ALTERNATIVES);
                 startActivityForResult(intent,1);
             }
@@ -62,24 +70,35 @@ public class ChooseJudgmentActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
         super.onActivityResult(requestCode, resultCode, data);
 
-        SharedPreferences projects = getSharedPreferences("projects", MODE_PRIVATE);
-
-        MAI mai = new MAI();
-
         String nameFromExtras = data.getExtras().getString("project_name");
-        Project project = control.getProjectByName(nameFromExtras);
+        int judgType = data.getExtras().getInt("completed_type");
 
-        ArrayList<Double> firstWmax = mai.getWmax(project.alternativesMaxtrix.get(0));
-
-        List<ArrayList<Double>> vectors = new ArrayList<>();
-        for(int i = 0; i < project.alternativesMaxtrix.size(); i++){
-            vectors.add(mai.getWmax(project.alternativesMaxtrix.get(i)));
+        switch (judgType){
+            case 0:
+                criterionsMatrixChanged = true;
+                break;
+            case 1:
+                alternativeMatrixChanged = true;
+                break;
         }
+        if(criterionsMatrixChanged && alternativeMatrixChanged) {
+            SharedPreferences projects = getSharedPreferences("projects", MODE_PRIVATE);
 
-        List<ArrayList<Double>> matrix = mai.makeVectorsMatrix(vectors);
-        List<ArrayList<Double>> Lmatrix = mai.makeLmatrix(vectors);
-        List<ArrayList<Double>> Bmatrix = mai.makeBmatrix(vectors);
+            MAI mai = new MAI();
 
+            Project project = control.getProjectByName(nameFromExtras);
+
+            ArrayList<Double> firstWmax = mai.getWmax(project.alternativesMaxtrix.get(0));
+
+            List<ArrayList<Double>> vectors = new ArrayList<>();
+            for (int i = 0; i < project.alternativesMaxtrix.size(); i++) {
+                vectors.add(mai.getWmax(project.alternativesMaxtrix.get(i)));
+            }
+
+            List<ArrayList<Double>> matrix = mai.makeVectorsMatrix(vectors);
+            List<ArrayList<Double>> Lmatrix = mai.makeLmatrix(vectors);
+            List<ArrayList<Double>> Bmatrix = mai.makeBmatrix(vectors);
+        }
 
 
     }

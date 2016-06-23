@@ -24,7 +24,9 @@ import com.unnamed.b.atv.model.TreeNode;
 
 import java.lang.reflect.Type;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -111,6 +113,7 @@ public class ProjectControl {
         builder.registerTypeAdapter(TreeNode.class, new treeSerializer());
         Gson gson = builder.create();
 
+        editor.remove(project.name);
         editor.putString(project.name, gson.toJson(project, new TypeToken<Project>() {
         }.getType()));
         editor.apply();
@@ -144,6 +147,13 @@ public class ProjectControl {
         Type type_treeNode = new TypeToken<TreeNode>(){}.getType();
 
         return gson.fromJson(json, type_treeNode);
+    }
+    public List<Integer> initializePositionsList(int count){
+        List<Integer> list = new ArrayList<>();
+        for(int i=0; i < count; i++){
+            list.add(0);
+        }
+        return list;
     }
 
 }
