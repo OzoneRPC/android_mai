@@ -2,12 +2,16 @@ package ozone.mai_2;
 
 import android.widget.ArrayAdapter;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.unnamed.b.atv.model.TreeNode;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Ozone on 23.05.2016.
@@ -16,24 +20,32 @@ public class MAI {
     public List<ArrayList<Double>>  generateCriterionsMatrix(int size){
         return generateMatrix(size);
     }
-    public List<List<ArrayList<Double>>> generateAlternativesMatrix(TreeNode tree){
+    public HashMap<String , List<ArrayList<Double>>> generateAlternativesMatrix(JsonObject projectTree){
 
 
+        HashMap<String ,List<ArrayList<Double>>> map = new HashMap<>();
+
+        for(Map.Entry<String, JsonElement> entry : projectTree.entrySet()){
+            if(entry.getKey() != "crCount"){
+               JsonObject group = entry.getValue().getAsJsonObject();
+                int altCount = group.get("alternatives").getAsJsonObject().get("altCount").getAsInt();
 
 
-        List <List<ArrayList<Double>>> alternativesMatrixList = new ArrayList<>();
-
-        for(TreeNode criterionNode : tree.getChildren()){
-
-            List<ArrayList<Double>> alternativeMatrix = generateMatrix(criterionNode.getChildren().size());
-
-            alternativesMatrixList.add(alternativeMatrix);
+                for(Map.Entry<String, JsonElement> groupEntry : group.entrySet()){
+                    String key = groupEntry.getKey();
+                    JsonElement value = groupEntry.getValue();
+                    if(key != "alternatives"){
+                        List<ArrayList<Double>> alternativeMatrix = generateMatrix(altCount);
+                        map.put(key, alternativeMatrix);
+                    }
+                }
+            }
         }
-
-        return alternativesMatrixList;
+        return map;
     }
     public List<ArrayList<Double>> generateMatrix(int size){
-        List<ArrayList<Double>> matrix = new ArrayList<>();
+        List<ArrayList<Double>> matrix = new ArrayList<>
+                  ();
         for(int i=0; i < size;i++){
             ArrayList<Double> vector = new ArrayList<>();
             for(int j=0; j < size; j++){

@@ -25,9 +25,11 @@ import com.unnamed.b.atv.model.TreeNode;
 import java.lang.reflect.Type;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -42,6 +44,9 @@ public class ProjectControl {
     protected String projectKey = "project";
     private Type type_project;
     private Type type_treeNode;
+
+    public static String nodeType_alternative = "alternative";
+    public static String nodeType_criterion = "criterion";
 
     public MAI mai = new MAI();
 
@@ -67,22 +72,23 @@ public class ProjectControl {
     }
 
 
-    public void saveProject(String name, String objective, TreeNode tree){
+    public void saveProject(String name, String objective, TreeNode tree, JsonObject projectTree){
         SharedPreferences.Editor editor = projects.edit();
+
+        Type type_project = new TypeToken<Project>(){}.getType();
 
         GsonBuilder builder = new GsonBuilder();
         builder.registerTypeAdapter(TreeNode.class, new treeSerializer());
         Gson gson = builder.create();
-
-        Type type_project = new TypeToken<Project>(){}.getType();
 
         Project project = new Project();
         project.name = name;
         project.objective = objective;
         project.tree = tree;
 
-        project.criterionsMatrix = mai.generateCriterionsMatrix(tree.getChildren().size());
-        project.alternativesMaxtrix = mai.generateAlternativesMatrix(tree);
+        project.criterionsMatrix = mai.generateCriterionsMatrix(projectTree.get("crCount").getAsInt());
+        project.alternativesMaxtrix = mai.generateAlternativesMatrix(projectTree);
+        project.projectTreeJson = projectTree.toString();
 
         String projectJson = gson.toJson(project, type_project);
 
@@ -104,6 +110,16 @@ public class ProjectControl {
             project = gson.fromJson(projectJson, type_project);
         }
         return project;
+    }
+    public String serializeJsonObject(JsonObject projectTree){
+        GsonBuilder builder = new GsonBuilder();
+        Gson gson = builder.create();
+        return gson.toJson(projectTree);
+    }
+    public JsonObject userializeJsonObject(String json){
+        GsonBuilder builder = new GsonBuilder();
+        Gson gson = builder.create();
+        return gson.fromJson(json, JsonObject.class);
     }
 
     public void updateProject(Project project){
@@ -131,23 +147,6 @@ public class ProjectControl {
             editor.apply();
         }
     }
-    public String serializeTree(TreeNode tree){
-        GsonBuilder builder = new GsonBuilder();
-        builder.registerTypeAdapter(TreeNode.class, new treeSerializer());
-        Gson gson = builder.create();
-
-        Type type_treeNode = new TypeToken<TreeNode>(){}.getType();
-        return gson.toJson(tree, type_treeNode);
-    }
-    public TreeNode unserializeTree(String json){
-        GsonBuilder builder = new GsonBuilder();
-        builder.registerTypeAdapter(TreeNode.class, new treeUnserializer());
-        Gson gson = builder.create();
-
-        Type type_treeNode = new TypeToken<TreeNode>(){}.getType();
-
-        return gson.fromJson(json, type_treeNode);
-    }
     public List<Integer> initializePositionsList(int count){
         List<Integer> list = new ArrayList<>();
         for(int i=0; i < count; i++){
@@ -155,7 +154,42 @@ public class ProjectControl {
         }
         return list;
     }
+    public JsonArray TreeNodeToJson(TreeNode crParent){
+        JsonArray tree = new JsonArray();
+        int crCount = 0;
+        for(int i = 0; i < crParent.getChildren().size(); i++){
+            TreeNode groupNode = crParent.getChildren().get(i);
+            String id = ((CriterionsTreeHolder)groupNode.getViewHolder()).id+"";
 
+            JsonObject group = new JsonObject();
+            group.add("alternatives", new JsonObject());
+            JsonObject alterGroup = group.get("alternatives").getAsJsonObject();
+
+            EditText name = (EditText)groupNode.getViewHolder().getView().findViewById(R.id.criterion_add_text);
+            group.add(id, new JsonPrimitive(name.getText().toString()));
+            crCount++;
+
+            int altCount = 0;
+            for(int j = 0; j < groupNode.getChildren().size(); j++){
+                TreeNode node = groupNode.getChildren().get(j);
+                String nodeType = ((CriterionsTreeHolder) node.getViewHolder()).nodeType;
+                EditText nodeNameView = (EditText)node.getViewHolder().getView().findViewById(R.id.criterion_add_text);
+                String nodeId = ((CriterionsTreeHolder) node.getViewHolder()).id+"";
+
+                if(nodeType == nodeType_criterion){
+                    crCount++;
+                    group.add(nodeId, new JsonPrimitive(nodeNameView.getText().toString()));
+                }else if(nodeType == nodeType_alternative){
+                    altCount++;
+                    alterGroup.add(nodeId, new JsonPrimitive(nodeNameView.getText().toString()));
+                }
+            }
+            alterGroup.add("altCount", new JsonPrimitive(altCount));
+            tree.add(alterGroup);
+        }
+        tree.add("crCount", new JsonPrimitive(crCount));
+        return tree;
+    }
 }
 class treeSerializer implements JsonSerializer<TreeNode>
 {

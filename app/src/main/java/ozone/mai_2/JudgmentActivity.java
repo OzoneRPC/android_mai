@@ -11,11 +11,15 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.infteh.comboseekbar.ComboSeekBar;
+import com.unnamed.b.atv.model.TreeNode;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Ozone on 09.05.2016.
@@ -28,6 +32,8 @@ public class JudgmentActivity extends AppCompatActivity {
     private LinearLayout seekbarContainer;
     private ProjectControl control;
     private static ArrayList<Activity> activities=new ArrayList<Activity>();
+    private JsonObject projectTree;
+    private ArrayList<String> crList;
 
     private int judgType;
     private boolean changed;
@@ -42,9 +48,21 @@ public class JudgmentActivity extends AppCompatActivity {
 
         currentProject = control.getProjectByName(nameFromExtras);
 
+        projectTree = currentProject.getProjectTree();
         Intent intent = getIntent();
         judgType  = intent.getIntExtra("type", -1);
         changed = intent.getBooleanExtra("changed", false);
+
+        crList = new ArrayList<>();
+
+        for(Map.Entry<String, JsonElement> entry : projectTree.entrySet()){
+            for(Map.Entry<String, JsonElement> group : entry.getValue().getAsJsonObject().entrySet()){
+                if(group.getKey() != "alternatives"){
+                    crList.add(group.getKey());
+                }
+            }
+        }
+
         switch (judgType){
             case 0:
                 if(!changed) {
@@ -78,8 +96,9 @@ public class JudgmentActivity extends AppCompatActivity {
         TextView criterionB = (TextView)view.findViewById(R.id.item_b);
 
         if(criterionNumber == -1) {
-            EditText a = (EditText) currentProject.tree.getChildren().get(row).getViewHolder().getView().findViewById(R.id.criterion_add_text);
-            EditText b = (EditText) currentProject.tree.getChildren().get(column).getViewHolder().getView().findViewById(R.id.criterion_add_text);
+
+            EditText a = (EditText) getTreeNodeById(Integer.parseInt(crList.get(row))).getViewHolder().getView().findViewById(R.id.criterion_add_text);
+            EditText b = (EditText) getTreeNodeById(Integer.parseInt(crList.get(column))).getViewHolder().getView().findViewById(R.id.criterion_add_text);
             criterionA.append(a.getText().toString().replace("\"", "").replace("\\", ""));
             criterionB.append(b.getText().toString().replace("\"", "").replace("\\", ""));
         }else{
@@ -259,5 +278,16 @@ public class JudgmentActivity extends AppCompatActivity {
     {
         super.onDestroy();
         activities.remove(this);
+    }
+    public TreeNode getTreeNodeById(int id){
+        TreeNode node = null;
+        for(int i=0; i < currentProject.tree.getChildren().size(); i++){
+            for(int j=0; j < currentProject.tree.getChildren().get(i).size(); j++){
+                if(id == ((CriterionsTreeHolder)currentProject.tree.getChildren().get(i).getChildren().get(j).getViewHolder()).id){
+                    node =  currentProject.tree.getChildren().get(i).getChildren().get(j);
+                }
+            }
+        }
+        return node;
     }
 }
