@@ -90,7 +90,8 @@ public class JudgmentActivity extends AppCompatActivity {
     }
     private void addComboSeekBar(final int row, final int column, final int criterionNumber){
         final View view = getLayoutInflater().inflate(R.layout.custom_seekbar, null);
-        ComboSeekBar comboSeekBar = (ComboSeekBar)view.findViewById(R.id.comboseekbar);
+        ComboSeekBar comboSeekBar = (ComboSeekBar)view.
+                findViewById(R.id.comboseekbar);
         TextView criterionName = (TextView)view.findViewById(R.id.criterion_name);
         TextView criterionA = (TextView)view.findViewById(R.id.item_a);
         TextView criterionB = (TextView)view.findViewById(R.id.item_b);

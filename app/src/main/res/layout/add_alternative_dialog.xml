@@ -1,20 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="match_parent">
 
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:inputType="text|textPersonName"
+        android:inputType="text"
         android:ems="10"
-        android:id="@+id/dialog_criterion_name"
+        android:id="@+id/dialog_alternative_name"
         style="@style/Widget.AppCompat.EditText"
-        android:hint="Название критерия"
+        android:hint="Название альтернативы"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
         android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp" />
+
+    <Spinner
+        android:id="@+id/altSpinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/dialog_alternative_name"
+        android:layout_alignParentStart="true"
+        android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
-        android:editable="true" />
+        android:visibility="invisible">
+    </Spinner>
+
 </RelativeLayout>

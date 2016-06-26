@@ -5,7 +5,11 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.EditText;
 
+import com.unnamed.b.atv.model.TreeNode;
 
 
 /**
@@ -19,29 +23,27 @@ public class AddCriterionDialog extends DialogFragment{
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        Bundle args = this.getArguments();
-        nodeId = args.getInt("nodeId");
         activity = (AddProjectActivity) getActivity();
-        String title = "Выберите тип элемента";
-        String message = "Выберите тип добавляемого элемента: связанный критерий или альтернатива";
-        String criterion = "Критерий";
-        String alternative = "Альтернатива";
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle(title);  // заголовок
-        builder.setMessage(message); // сообщение
-        builder.setPositiveButton(criterion, new DialogInterface.OnClickListener() {
+        builder.setView(R.layout.add_criterion_dialog);
+
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        final View view = inflater.inflate(R.layout.add_criterion_dialog, null);
+
+        builder.setTitle("Добавить критерий");  // заголовок
+        builder.setMessage("Выберите тип добавляемого элемента: связанный критерий или альтернатива"); // сообщение]
+
+
+        builder.setPositiveButton("Добавить", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                activity.addTreeItem(nodeId, type_criterion);
+                EditText crNameEdit = (EditText) getDialog().findViewById(R.id.dialog_criterion_name);
+                String name = crNameEdit.getText().toString();
+
+                activity.addCriterion(name);
                 dialog.dismiss();
             }
         });
-        builder.setNegativeButton(alternative, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                activity.addTreeItem(nodeId, type_alternative);
-                dialog.dismiss();
-            }
-        });
-        builder.setNeutralButton("Отмена", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 dialog.dismiss();
             }

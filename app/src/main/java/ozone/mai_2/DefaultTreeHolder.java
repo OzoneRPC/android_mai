@@ -3,6 +3,7 @@ package ozone.mai_2;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.content.Context;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
@@ -22,7 +23,7 @@ import java.util.Random;
  * Created by Ozone on 28.05.2016.
  */
 
-public class DefaultTreeHolder extends TreeNode.BaseNodeViewHolder<DefaultTreeHolder.IconTreeItem> implements Serializable {
+public class DefaultTreeHolder extends TreeNode.BaseNodeViewHolder<DefaultTreeHolder.IconTreeItem>{
     private String text;
     private Context currentContext;
     private Window currentWindow;
@@ -48,13 +49,11 @@ public class DefaultTreeHolder extends TreeNode.BaseNodeViewHolder<DefaultTreeHo
         add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CriterionsTreeHolder.IconTreeItem crItemIcon = new CriterionsTreeHolder.IconTreeItem();
-                TreeNode newNode = new TreeNode(crItemIcon).setViewHolder(new CriterionsTreeHolder(currentContext, currentWindow));
-                node.addChildren(newNode);
-                EditText criterionNameEdit = (EditText)newNode.getViewHolder().getView().findViewById(R.id.criterion_add_text);
-                criterionNameEdit.setText(criterionNameEdit.getText() +" "+index);
-                index++;
-                tree.expandLevel(node.getLevel());
+                Bundle args = new Bundle();
+                Activity activity = (Activity) currentContext;
+                FragmentManager manager = activity.getFragmentManager();
+                AddCriterionDialog dialog = new AddCriterionDialog();
+                dialog.show(manager, "dialog");
             }
         });
         /*text.setOnClickListener(new View.OnClickListener() {

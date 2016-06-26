@@ -60,10 +60,10 @@ public class CriterionsTreeHolder extends TreeNode.BaseNodeViewHolder<Criterions
             @Override
             public void onClick(View v) {
                 Bundle args = new Bundle();
-                args.putInt("nodeId", node.getId());
+                args.putInt("id", id);
                 Activity activity = (Activity) currentContext;
                 FragmentManager manager = activity.getFragmentManager();
-                AddCriterionDialog dialog = new AddCriterionDialog();
+                AddAlternativeDialog dialog = new AddAlternativeDialog();
                 dialog.setArguments(args);
                 dialog.show(manager, "dialog");
             }

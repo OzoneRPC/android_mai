@@ -39,7 +39,14 @@ public class AddProjectActivity extends AppCompatActivity {
     private List<View> alternativesListView;*/
     private ProjectControl control;
     private TreeNode crRoot;
-    private JsonObject projectTree;
+    private TreeNode crParent;
+    private JsonObject criterionsList;
+
+    public static HashMap<Integer, TreeNode> crNodes;
+    public static List<String> altNames;
+    public static HashMap<Integer, TreeNode> altNodes;
+    public static List<Integer> altIds;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,16 +54,18 @@ public class AddProjectActivity extends AppCompatActivity {
 
         control = new ProjectControl(this);
 
-        projectTree = new JsonObject();
-
+        crNodes = new HashMap<>();
+        criterionsList = new JsonObject();
+        altNames = new ArrayList<>();
+        altNodes = new HashMap<>();
         crRoot = TreeNode.root();
-
+        altIds = new ArrayList<>();
         DefaultTreeHolder defItemCriterions = new DefaultTreeHolder(this, getWindow());
         DefaultTreeHolder.IconTreeItem item = new DefaultTreeHolder.IconTreeItem();
         item.text = "Критерии";
 
 
-        final TreeNode crParent = new TreeNode(item).setViewHolder(defItemCriterions);
+        crParent = new TreeNode(item).setViewHolder(defItemCriterions);
 
         crRoot.addChild(crParent);
 
@@ -73,7 +82,7 @@ public class AddProjectActivity extends AppCompatActivity {
         btnSaveAndContinue.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                EditText project_name = (EditText)findViewById(R.id.projectName);
+                /*EditText project_name = (EditText)findViewById(R.id.projectName);
                 EditText project_objective = (EditText)findViewById(R.id.projectObjective);
 
                 projectTree = control.TreeNodeToJson(crParent);
@@ -84,58 +93,42 @@ public class AddProjectActivity extends AppCompatActivity {
                 Intent intent = new Intent("android.intent.action.CHOOSE_JUDGMENT");
                 String name = project_name.getText().toString();
                 intent.putExtra("project_name", name);
-                startActivityForResult(intent, 1);
+                startActivityForResult(intent, 1);*/
             }
         });
 
     }
-    public void addTreeItem(int nodeId, int type){
-        TreeNode currentNode = null;
-        for(TreeNode node : crRoot.getChildren().get(0).getChildren()){
-            if(nodeId == node.getId()){
-                currentNode = node;
-            }
-        }
-        if(currentNode != null) {
-            CriterionsTreeHolder.IconTreeItem crItemIcon = new CriterionsTreeHolder.IconTreeItem();
-            TreeNode newNode = new TreeNode(crItemIcon).setViewHolder(new CriterionsTreeHolder(this, getWindow()));
+    public void addCriterion(String name){
 
-            CriterionsTreeHolder newNodeHolder = (CriterionsTreeHolder) newNode.getViewHolder();
-            View nodeView = newNode.getViewHolder().getView();
+        CriterionsTreeHolder.IconTreeItem crItemIcon = new CriterionsTreeHolder.IconTreeItem();
+        TreeNode newNode = new TreeNode(crItemIcon).setViewHolder(new CriterionsTreeHolder(this, getWindow()));
+        EditText criterionNameEdit = (EditText)newNode.getViewHolder().getView().findViewById(R.id.criterion_add_text);
+        criterionNameEdit.setText(name);
 
+        CriterionsTreeHolder holder = (CriterionsTreeHolder)newNode.getViewHolder();
 
-            EditText text = (EditText) nodeView.findViewById(R.id.criterion_add_text);
+        crNodes.put(holder.id, newNode);
 
-            Button add = (Button) nodeView.findViewById(R.id.add);
-            add.setGravity(Gravity.RIGHT);
-            add.setVisibility(View.INVISIBLE);
+        crParent.addChildren(newNode);
 
+        String crId = ((CriterionsTreeHolder)newNode.getViewHolder()).id+"";
+        criterionsList.add(crId, new JsonPrimitive(name));
+        AndroidTreeView tree = crParent.getViewHolder().getTreeView();
+        tree.expandLevel(newNode.getLevel());
+    }
+    public void addAlternative(Integer crId, TreeNode node, String name){
 
-            RelativeLayout.LayoutParams newParams = (RelativeLayout.LayoutParams) text.getLayoutParams();
-            text.setLayoutParams(newParams);
-            if (type == 0) {
-                newNodeHolder.nodeType = control.nodeType_alternative;
-                text.setText("Альтернатива");
-                newParams.leftMargin = 100;
-                currentNode.addChild(newNode);
-            } else {
-                newNodeHolder.nodeType = control.nodeType_criterion;
-                newParams.leftMargin = 50;
-                text.setText("Связанный критерий");
-                List<TreeNode> altNodes = new ArrayList<>();
-                for(TreeNode node : currentNode.getChildren()){
-                    CriterionsTreeHolder nodeViewHolder = (CriterionsTreeHolder)node.getViewHolder();
-                    if(nodeViewHolder.nodeType == control.nodeType_alternative){
-                        altNodes.add(node);
-                    }
-                }
-                for(TreeNode node : altNodes){
-                    currentNode.deleteChild(node);
-                }
-                currentNode.addChild(newNode);
-                currentNode.addChildren(altNodes);
-            }
-            currentNode.getViewHolder().getTreeView().expandLevel(currentNode.getLevel());
-        }
+        TreeNode cr = crNodes.get(crId);
+        cr.addChild(node);
+
+        CriterionsTreeHolder holder = (CriterionsTreeHolder) node.getViewHolder();
+
+        altNodes.put(holder.id, node);
+
+        altNames.add(name);
+        altIds.add(holder.id);
+
+        AndroidTreeView tree = cr.getViewHolder().getTreeView();
+        tree.expandLevel(node.getLevel());
     }
 }

@@ -187,7 +187,7 @@ public class ProjectControl {
             alterGroup.add("altCount", new JsonPrimitive(altCount));
             tree.add(alterGroup);
         }
-        tree.add("crCount", new JsonPrimitive(crCount));
+        //tree.add("crCount", new JsonPrimitive(crCount));
         return tree;
     }
 }
