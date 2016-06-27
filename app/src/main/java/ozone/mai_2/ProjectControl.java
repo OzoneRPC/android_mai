@@ -59,7 +59,7 @@ public class ProjectControl {
         type_treeNode = new TypeToken<TreeNode>(){}.getType();
     }
     public Map getAllProjects(){
-        return projects.getAll();
+        return (LinkedHashMap)projects.getAll();
     }
     public void updateExistProjectsList(String name){
         Set<String> existProjects = projects.getStringSet(existProjectsKey, null);
@@ -111,16 +111,6 @@ public class ProjectControl {
         }
         return project;
     }
-    public String serializeJsonObject(JsonObject projectTree){
-        GsonBuilder builder = new GsonBuilder();
-        Gson gson = builder.create();
-        return gson.toJson(projectTree);
-    }
-    public JsonObject userializeJsonObject(String json){
-        GsonBuilder builder = new GsonBuilder();
-        Gson gson = builder.create();
-        return gson.fromJson(json, JsonObject.class);
-    }
 
     public void updateProject(Project project){
         SharedPreferences.Editor editor = projects.edit();
@@ -133,6 +123,10 @@ public class ProjectControl {
         editor.putString(project.name, gson.toJson(project, new TypeToken<Project>() {
         }.getType()));
         editor.apply();
+    }
+
+    public Set<String>  getProjectList(){
+        return projects.getStringSet(existProjectsKey, null);
     }
 
     public void deleteProject(String name){

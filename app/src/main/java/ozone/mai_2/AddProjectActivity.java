@@ -43,9 +43,13 @@ public class AddProjectActivity extends AppCompatActivity {
     public static HashMap<Integer, TreeNode> crNodes;
     public static List<String> altNames;
     public static LinkedHashMap<Integer, TreeNode> altNodes;
+    private static ArrayList<Activity> activities = new ArrayList<Activity>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        activities.add(this);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.add_project);
         setupParent(findViewById(R.id.add_project_layout));
@@ -150,7 +154,10 @@ public class AddProjectActivity extends AppCompatActivity {
         InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
         inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
     }
-
-
-
+    @Override
+    public void onDestroy()
+    {
+        super.onDestroy();
+        activities.remove(this);
+    }
 }

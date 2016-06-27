@@ -22,5 +22,6 @@ public class Project{
     public LinkedHashMap<Integer,LinkedHashMap<Integer, LinkedHashMap<Integer, Double>>>  alternativesMatrix;
     public List<Integer> criterionsPositions;
     public List<Integer> alternativesPostions;
+    public LinkedHashMap<Integer, Double> resultVector = null;
 
 }

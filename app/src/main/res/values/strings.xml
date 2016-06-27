@@ -8,9 +8,10 @@
     <string name="name">Название</string>
     <string name="next">Далее</string>
     <string name="saveAndContinue">Продолжить</string>
+    <string name="change">Изменить</string>
     <string name="save">Сохранить</string>
     <string name="add">добавить</string>
-    <string name="delete">удалить</string>
+    <string name="delete">Удалить</string>
     <string name="criterion">Критерий</string>
     <string name="alternative">Альтеранатива</string>
     <string name="make_result">Произвести вычисления</string>
