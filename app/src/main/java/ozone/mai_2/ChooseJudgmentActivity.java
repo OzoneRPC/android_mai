@@ -15,6 +15,8 @@ import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 
@@ -92,11 +94,14 @@ public class ChooseJudgmentActivity extends AppCompatActivity {
 
         Project project = control.getProjectByName(nameFromExtras);
 
-        boolean criterionsCrIsNormal = false;
+        boolean criterionsCrIsNormal = true;
         boolean alternativesCrIsNormal = true;
-        ArrayList<Double> criterionsWmax = new ArrayList<Double>();
+
+        LinkedHashMap<Integer, Double> criterionsWmax = new LinkedHashMap<>();
+
         if(criterionsMatrixChanged) {
             criterionsWmax = mai.getWmax(project.criterionsMatrix);
+
 
             double cr = mai.getCR(project.criterionsMatrix, criterionsWmax);
 
@@ -107,36 +112,70 @@ public class ChooseJudgmentActivity extends AppCompatActivity {
 
             criterionResultCr.setText("Индекс согласованности: " + cr);
         }
-        List<ArrayList<Double>> vectors = new ArrayList<>();
+        LinkedHashMap<Integer, LinkedHashMap<Integer,Double>> vectors = new LinkedHashMap<>();
 
         if(alternativeMatrixChanged){
             TextView alternativeCr = (TextView)findViewById(R.id.alternatives_cr);
             alternativeCr.setText("");
-            for (int i = 0; i < project.alternativesMaxtrix.size(); i++) {
-                ArrayList<Double> alternativeWmax = mai.getWmax(project.alternativesMaxtrix.get(i));
-                double cr = mai.getCR(project.alternativesMaxtrix.get(i), alternativeWmax);
+            List<Integer> crKeySet = new ArrayList<>(project.alternativesMatrix.keySet());
+            for (int i = 0; i < project.alternativesMatrix.size(); i++) {
+                LinkedHashMap<Integer,Double> alternativeWmax = mai.getWmax(project.alternativesMatrix.get(crKeySet.get(i)));
+                double cr = mai.getCR(project.alternativesMatrix.get(crKeySet.get(i)), alternativeWmax);
                 if(cr > 0.1){
-                    EditText textfield = (EditText) project.tree.getChildren().get(i).getViewHolder().getView().findViewById(R.id.criterion_add_text);
+                    /*EditText textfield = (EditText) project.tree.getChildren().get(i).getViewHolder().getView().findViewById(R.id.criterion_add_text);
                     String matrixName = textfield.getText().toString().replace("\"", "").replace("\\","");
                     alternativeCr.append("Индекс согласованности у критерия " + matrixName + " - " + cr + "\n");
-                    alternativesCrIsNormal = false;
+                    alternativesCrIsNormal = false;*/
                 }
-                vectors.add(alternativeWmax);
+                vectors.put(crKeySet.get(i), alternativeWmax);
             }
         }else{
             alternativesCrIsNormal = false;
         }
         if(criterionsCrIsNormal && alternativesCrIsNormal){
-            List<ArrayList<Double>> matrix = mai.makeVectorsMatrix(vectors);
-            List<ArrayList<Double>> Lmatrix = mai.makeLmatrix(vectors);
-            List<ArrayList<Double>> Bmatrix = mai.makeBmatrix(vectors);
+            LinkedHashMap<Integer, LinkedHashMap<Integer, Double>> matrix = mai.makeVectorsMatrix(vectors);
+            LinkedHashMap<Integer, LinkedHashMap<Integer, Double>> Lmatrix = mai.makeLmatrix(vectors);
+            LinkedHashMap<Integer, LinkedHashMap<Integer, Double>> Bmatrix = mai.makeBmatrix(vectors);
 
-            List<ArrayList<Double>> matrixMultiplyFirst = mai.multiplyMaxtix(matrix, Lmatrix);
-            List<ArrayList<Double>> matrixMultiplySecond = mai.multiplyMaxtix(Bmatrix, matrixMultiplyFirst);
+            List<ArrayList<Double>> matrixList = new ArrayList<>();
+            for (Integer altKey : matrix.keySet()){
 
-            ArrayList<Double> result = mai.multiplyVector(matrixMultiplySecond, criterionsWmax);
+                ArrayList<Double> row =  new ArrayList<>();
+                for(Integer crKey : matrix.get(altKey).keySet()){
+                    row.add(matrix.get(altKey).get(crKey));
+                }
+                matrixList.add(row);
+            }
+            List<ArrayList<Double>> LmatrixList = new ArrayList<>();
 
-            ArrayList<Integer> creterionsIdMap = new ArrayList<>();
+            for(Integer rowId: Lmatrix.keySet()){
+                ArrayList<Double> row = new ArrayList<>();
+                for (Integer colId : Lmatrix.get(rowId).keySet()){
+                    row.add(Lmatrix.get(rowId).get(colId));
+                }
+                LmatrixList.add(row);
+            }
+            List<ArrayList<Double>> BmatrixList = new ArrayList<>();
+
+            for(Integer rowId: Bmatrix.keySet()){
+                ArrayList<Double> row = new ArrayList<>();
+                for (Integer colId : Bmatrix.get(rowId).keySet()){
+                    row.add(Bmatrix.get(rowId).get(colId));
+                }
+                BmatrixList.add(row);
+            }
+            ArrayList<Double> criterionsWmaxList = new ArrayList<>();
+            for(Integer rowId: criterionsWmax.keySet()){
+                criterionsWmaxList.add(criterionsWmax.get(rowId));
+            }
+
+
+            List<ArrayList<Double>> matrixMultiplyFirst = mai.multiplyMatrix(matrixList, LmatrixList);
+            List<ArrayList<Double>> matrixMultiplySecond = mai.multiplyMatrix(BmatrixList, matrixMultiplyFirst);
+
+            ArrayList<Double> result = mai.multiplyVector(matrixMultiplySecond, criterionsWmaxList);
+
+            /*ArrayList<Integer> creterionsIdMap = new ArrayList<>();
             for(int i = 0; i < project.tree.getChildren().size(); i++){
                 for (int j = 0; j < project.tree.getChildren().get(i).getChildren().size(); j++){
                     creterionsIdMap.add(i);
@@ -160,7 +199,7 @@ public class ChooseJudgmentActivity extends AppCompatActivity {
             EditText alternativeName = (EditText)project.tree.getChildren().get(creterionsIdMap.get(lastPos)).getChildren().get(alternativeLastPos).getViewHolder().getView().findViewById(R.id.criterion_add_text);
             EditText criterion = (EditText)project.tree.getChildren().get(creterionsIdMap.get(lastPos)).getViewHolder().getView().findViewById(R.id.criterion_add_text);
             String name = alternativeName.getText().toString();
-            String criterionName = criterion.getText().toString();
+            String criterionName = criterion.getText().toString();*/
             //resultText.setText("Наиболее оптимальной является альтернатива "+ name + "");
 
         }

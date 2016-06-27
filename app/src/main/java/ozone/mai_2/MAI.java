@@ -10,38 +10,62 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by Ozone on 23.05.2016.
  */
 public class MAI {
-    public List<ArrayList<Double>>  generateCriterionsMatrix(int size){
-        return generateMatrix(size);
-    }
-    public HashMap<String , List<ArrayList<Double>>> generateAlternativesMatrix(JsonObject projectTree){
+    public LinkedHashMap<Integer,LinkedHashMap<Integer, Double>> generateCriterionsMatrix(List<TreeNode> criterions){
 
 
-        HashMap<String ,List<ArrayList<Double>>> map = new HashMap<>();
 
-        for(Map.Entry<String, JsonElement> entry : projectTree.entrySet()){
-            if(entry.getKey() != "crCount"){
-               JsonObject group = entry.getValue().getAsJsonObject();
-                int altCount = group.get("alternatives").getAsJsonObject().get("altCount").getAsInt();
+        LinkedHashMap<Integer,LinkedHashMap<Integer, Double>> matrix = new LinkedHashMap<>();
+        for(int i=0; i < criterions.size();i++){
+            int columnId = ((CriterionsTreeHolder)criterions.get(i).getViewHolder()).getValues().id;
 
-
-                for(Map.Entry<String, JsonElement> groupEntry : group.entrySet()){
-                    String key = groupEntry.getKey();
-                    JsonElement value = groupEntry.getValue();
-                    if(key != "alternatives"){
-                        List<ArrayList<Double>> alternativeMatrix = generateMatrix(altCount);
-                        map.put(key, alternativeMatrix);
-                    }
+            LinkedHashMap<Integer, Double> vector = new LinkedHashMap<>();
+            for(int j=0; j < criterions.size(); j++){
+                int rowId = ((CriterionsTreeHolder)criterions.get(j).getViewHolder()).getValues().id;
+                if(i == j){
+                    vector.put(rowId, 1.0);
+                }else{
+                    vector.put(rowId, 0.0);
                 }
             }
+            matrix.put(columnId, vector);
         }
-        return map;
+        return matrix;
+    }
+    public LinkedHashMap<Integer,LinkedHashMap<Integer, LinkedHashMap<Integer, Double>>> generateAlternativesMatrix(List<TreeNode> criterions){
+
+        LinkedHashMap<Integer,LinkedHashMap<Integer, LinkedHashMap<Integer, Double>>> matrixList = new LinkedHashMap<>();
+
+        for(int i = 0; i < criterions.size(); i++){
+            int crId = ((CriterionsTreeHolder)criterions.get(i).getViewHolder()).getValues().id;
+            LinkedHashMap<Integer,LinkedHashMap<Integer, Double>> matrix = new LinkedHashMap<>();
+
+            for(int j = 0; j < criterions.get(i).getChildren().size(); j++){
+                int columnId = ((CriterionsTreeHolder)criterions.get(i).getChildren().get(j).getViewHolder()).getValues().id;
+
+                LinkedHashMap<Integer, Double> row = new LinkedHashMap<>();
+                for(int k = 0; k < criterions.get(i).getChildren().size(); k++){
+                    int rowId = ((CriterionsTreeHolder)criterions.get(i).getChildren().get(k).getViewHolder()).getValues().id;
+                    if(j == k){
+                        row.put(rowId, 1.0);
+                    }else{
+                        row.put(rowId, 0.0);
+                    }
+                }
+                matrix.put(columnId, row);
+            }
+            matrixList.put(crId, matrix);
+        }
+        return matrixList;
     }
     public List<ArrayList<Double>> generateMatrix(int size){
         List<ArrayList<Double>> matrix = new ArrayList<>
@@ -59,24 +83,32 @@ public class MAI {
         }
         return matrix;
     }
-    public ArrayList<Double> getWmax(List<ArrayList<Double>> A){
+    public LinkedHashMap<Integer, Double> getWmax(LinkedHashMap<Integer,LinkedHashMap<Integer, Double>> A){
         List<Double> W = new ArrayList<>();
         List<Double> Wnew =  new ArrayList<>();
         List<ArrayList<Double>> tempA = new ArrayList<>();
-        for (int i = 0; i < A.size(); i++){
+
+        List<Integer> keySet = new ArrayList<>(A.keySet());
+
+        for (int i = 0; i < keySet.size(); i++){
             ArrayList<Double> row = new ArrayList<>();
-            for (int j = 0; j < A.get(i).size(); j++){
-                row.add(A.get(i).get(j));
+            for (int j = 0; j  < keySet.size(); j++){
+                row.add(A.get(keySet.get(i)).get(keySet.get(j)));
             }
             tempA.add(row);
         }
 
         W = calculateWmax(tempA);
         while(true){
-            tempA = multiplyMaxtix(tempA, tempA);
+            tempA = multiplyMatrix(tempA, tempA);
             Wnew = calculateWmax(tempA);
             if(compareVectors(W, Wnew)){
-                return (ArrayList<Double>)Wnew;
+                LinkedHashMap<Integer, Double> result = new LinkedHashMap<>();
+
+                for (int i = 0; i < Wnew.size(); i++){
+                    result.put(keySet.get(i), Wnew.get(i));
+                }
+                return result;
             }else{
                 W = Wnew;
             }
@@ -107,7 +139,7 @@ public class MAI {
         return Wmax;
     }
 
-    public List<ArrayList<Double>> multiplyMaxtix(List<ArrayList<Double>> A, List<ArrayList<Double>> B){
+    public List<ArrayList<Double>> multiplyMatrix(List<ArrayList<Double>> A, List<ArrayList<Double>> B){
         int mA = A.size();
         int nA = A.get(0).size();
         int mB = B.size();
@@ -147,11 +179,12 @@ public class MAI {
         }
         return true;
     }
-    public List<ArrayList<Double>> makeVectorsMatrix(List<ArrayList<Double>> vectors){
+    public LinkedHashMap<Integer, LinkedHashMap<Integer, Double>> makeVectorsMatrix(LinkedHashMap<Integer, LinkedHashMap<Integer, Double>> vectors){
+/*
         int criterionsCount = vectors.size();
+*/
 
-        List<ArrayList<Double>> matrix = new ArrayList<>();
-        for(int i = 0; i < criterionsCount; i++) {
+        /*for(int i = 0; i < criterionsCount; i++) {
 
             for (int j = 0 ; j < vectors.get(i).size(); j++){
                 ArrayList<Double> row = new ArrayList<>();
@@ -166,77 +199,90 @@ public class MAI {
                 }
                 matrix.add(row);
             }
-        }
-        return matrix;
-    }
-    public List<ArrayList<Double>> makeLmatrix(List<ArrayList<Double>> vectors){
-        int criterionsCount = vectors.size();
-        int alternativesCount = 0;
-        for (int i =0; i < criterionsCount; i ++){
-            alternativesCount += vectors.get(i).size();
-        }
+        }*/
+        List <Integer> altIds = new ArrayList<>();
+        for (Integer crKey : vectors.keySet()){
 
-        List<ArrayList<Double>> matrix = new ArrayList<>();
-        for(int i = 0; i < criterionsCount; i++) {
-
-            ArrayList<Double> row = new ArrayList<>();
-            for(int j=0; j < criterionsCount; j++){
-                if(i == j){
-                    row.add((double) vectors.get(i).size() / alternativesCount);
-                }else{
-                    double num = 0;
-                    row.add(num);
+            for (Integer altKey : vectors.get(crKey).keySet()){
+                if(!altIds.contains(altKey)){
+                    altIds.add(altKey);
                 }
             }
-            matrix.add(row);
         }
+        LinkedHashMap <Integer, LinkedHashMap<Integer, Double>> matrix = new LinkedHashMap<>();
+        for (int i = 0; i < altIds.size(); i++){
+
+            LinkedHashMap<Integer, Double> row = new LinkedHashMap<>();
+
+            for (Integer crKey : vectors.keySet()){
+                if(vectors.get(crKey).containsKey(altIds.get(i))){
+                    row.put(crKey, vectors.get(crKey).get(altIds.get(i)));
+                }else{
+                    row.put(crKey, 0.0);
+                }
+                matrix.put(altIds.get(i), row);
+            }
+        }
+
         return matrix;
     }
-    public List<ArrayList<Double>> makeSmatrix(List<ArrayList<Double>> vectors){
+    public LinkedHashMap<Integer, LinkedHashMap<Integer, Double>> makeLmatrix(LinkedHashMap<Integer, LinkedHashMap<Integer, Double>> vectors){
         int criterionsCount = vectors.size();
-        int alternativesCount = 0;
-        for (int i =0; i < criterionsCount; i ++){
-            alternativesCount += vectors.get(i).size();
-        }
+        List <Integer> altIds = new ArrayList<>();
+        for (Integer crKey : vectors.keySet()){
 
-        List<ArrayList<Double>> matrix = new ArrayList<>();
-        for(int i = 0; i < criterionsCount; i++) {
-
-            ArrayList<Double> row = new ArrayList<>();
-            for(int j=0; j < criterionsCount; j++){
-                if(i == j){
-                    row.add(getVectorsSum(vectors.get(i)));
-                }else{
-                    double num = 0;
-                    row.add(num);
+            for (Integer altKey : vectors.get(crKey).keySet()){
+                if(!altIds.contains(altKey)){
+                    altIds.add(altKey);
                 }
             }
-            matrix.add(row);
+        }
+        int alternativesCount = altIds.size();
+
+        LinkedHashMap<Integer, LinkedHashMap<Integer, Double>> matrix = new LinkedHashMap<>();
+
+        List<Integer> crKeys = new ArrayList<>(vectors.keySet());
+        for(int i = 0; i < criterionsCount; i++) {
+
+            LinkedHashMap<Integer, Double> row = new LinkedHashMap<>();
+            for(int j=0; j < criterionsCount; j++){
+                if(i == j){
+                    row.put(crKeys.get(j), (((double) vectors.get(crKeys.get(i)).size()) / alternativesCount));
+                }else{
+                    row.put(crKeys.get(j), 0.0);
+                }
+            }
+            matrix.put(crKeys.get(i),row);
         }
         return matrix;
     }
-    public List<ArrayList<Double>> makeBmatrix(List<ArrayList<Double>> vectors){
+
+    public LinkedHashMap<Integer, LinkedHashMap<Integer, Double>> makeBmatrix(LinkedHashMap<Integer, LinkedHashMap<Integer, Double>> vectors){
         double Wsum = 0.0;
         int alternativesCount = 0;
-        for (int i = 0; i < vectors.size(); i++){
-            for (int j=0; j < vectors.get(i).size(); j++){
-                Wsum += vectors.get(i).get(j);
-                alternativesCount++;
-            }
-        }
-        List<ArrayList<Double>> matrix = new ArrayList<>();
-        for(int i = 0; i < alternativesCount; i++) {
 
-            ArrayList<Double> row = new ArrayList<>();
-            for(int j=0; j < alternativesCount; j++){
-                if(i == j){
-                    row.add(Wsum);
-                }else{
-                    double num = 0;
-                    row.add(num);
+        List<Integer> altIds = new ArrayList<>();
+        for (Integer crKey : vectors.keySet()){
+            for (Integer altKey : vectors.get(crKey).keySet()){
+                Wsum += vectors.get(crKey).get(altKey);
+                if(!altIds.contains(altKey)){
+                    altIds.add(altKey);
                 }
             }
-            matrix.add(row);
+        }
+        alternativesCount = altIds.size();
+        LinkedHashMap<Integer, LinkedHashMap<Integer, Double>> matrix = new LinkedHashMap<>();
+        for(int i = 0; i < alternativesCount; i++) {
+
+            LinkedHashMap<Integer, Double> row = new LinkedHashMap<>();
+            for(int j=0; j < alternativesCount; j++){
+                if(i == j){
+                    row.put(altIds.get(j), Wsum);
+                }else{
+                    row.put(altIds.get(j), 0.0);
+                }
+            }
+            matrix.put(altIds.get(i), row);
         }
         return matrix;
     }
@@ -247,7 +293,7 @@ public class MAI {
         }
         return sum;
     }
-    public double getCR(List<ArrayList<Double>> matrix, ArrayList<Double> wmax){
+    public double getCR(LinkedHashMap<Integer, LinkedHashMap<Integer, Double>> matrix, LinkedHashMap<Integer, Double> wmax){
         double[] RI = {0.0,0.0, 0.58, 0.9, 1.12, 1.24, 1.32, 1.41,1.45,1.49}; // Ранг матрицы не должен быть меньше 3, ибо получится деление на ноль
         int matrixRang = matrix.size();
         double lambdaMax = getLambdaMax(matrix, wmax);
@@ -255,23 +301,26 @@ public class MAI {
         if(matrixRang > RI.length){
             matrixRang = RI.length;
         }
-        return CI/RI[matrixRang-1];
+        return (double) (CI/RI[matrixRang-1]);
     }
-    public double getLambdaMax(List<ArrayList<Double>> matrix, ArrayList<Double> wmax){
+    public double getLambdaMax(LinkedHashMap<Integer, LinkedHashMap<Integer, Double>> matrix, LinkedHashMap<Integer, Double> wmax){
         double vectorSum = 0.0;
         ArrayList<Double> tempA = new ArrayList<>();
         for (int i=0; i < matrix.size(); i++){
-            double num = 0.0;
-            tempA.add(num);
+            tempA.add(0.0);
         }
-        for(int arrayIndex = 0; arrayIndex < matrix.size(); arrayIndex++){
+        List<Integer> rowKeySet = new ArrayList<>(matrix.keySet());
+
+        ArrayList<Double> tempWmax = new ArrayList<>(wmax.values());
+
+        for(int i = 0; i < matrix.size(); i++){
             vectorSum = 0;
-            for(int vectorsCount = 0; vectorsCount < matrix.get(arrayIndex).size(); vectorsCount++){
-                vectorSum+=matrix.get(vectorsCount).get(arrayIndex);
+            for(int j = 0; j < matrix.get(rowKeySet.get(i)).size(); j++){
+                vectorSum+=matrix.get(rowKeySet.get(j)).get(rowKeySet.get(i));
             }
-            tempA.set(arrayIndex, vectorSum);
+            tempA.set(i, vectorSum);
         }
-        return multipyVectors(tempA, wmax);
+        return multipyVectors(tempA, tempWmax);
     }
     public double multipyVectors(ArrayList<Double> vectorA, ArrayList<Double> vectorB){
         double sum = 0.0;

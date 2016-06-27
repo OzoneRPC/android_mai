@@ -8,6 +8,7 @@ import com.unnamed.b.atv.model.TreeNode;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
@@ -17,15 +18,9 @@ public class Project{
     public String name;
     public String objective;
     public TreeNode tree;
-    public List<ArrayList<Double>> criterionsMatrix;
-    public HashMap<String, List<ArrayList<Double>>> alternativesMaxtrix;
+    public LinkedHashMap<Integer,LinkedHashMap<Integer, Double>> criterionsMatrix;
+    public LinkedHashMap<Integer,LinkedHashMap<Integer, LinkedHashMap<Integer, Double>>>  alternativesMatrix;
     public List<Integer> criterionsPositions;
     public List<Integer> alternativesPostions;
-    public String projectTreeJson;
 
-    public JsonObject getProjectTree(){
-        GsonBuilder builder = new GsonBuilder();
-        Gson gson = builder.create();
-        return gson.fromJson(projectTreeJson, JsonObject.class);
-    }
 }

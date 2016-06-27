@@ -27,6 +27,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -72,7 +73,7 @@ public class ProjectControl {
     }
 
 
-    public void saveProject(String name, String objective, TreeNode tree, JsonObject projectTree){
+    public void saveProject(String name, String objective, TreeNode tree){
         SharedPreferences.Editor editor = projects.edit();
 
         Type type_project = new TypeToken<Project>(){}.getType();
@@ -86,9 +87,9 @@ public class ProjectControl {
         project.objective = objective;
         project.tree = tree;
 
-        project.criterionsMatrix = mai.generateCriterionsMatrix(projectTree.get("crCount").getAsInt());
-        project.alternativesMaxtrix = mai.generateAlternativesMatrix(projectTree);
-        project.projectTreeJson = projectTree.toString();
+        project.criterionsMatrix = mai.generateCriterionsMatrix(tree.getChildren());
+        project.alternativesMatrix = mai.generateAlternativesMatrix(tree.getChildren());
+
 
         String projectJson = gson.toJson(project, type_project);
 
@@ -97,7 +98,6 @@ public class ProjectControl {
         editor.apply();
 
         updateExistProjectsList(name);
-
 
     }
     public Project getProjectByName(String name){
@@ -154,42 +154,7 @@ public class ProjectControl {
         }
         return list;
     }
-    public JsonArray TreeNodeToJson(TreeNode crParent){
-        JsonArray tree = new JsonArray();
-        int crCount = 0;
-        for(int i = 0; i < crParent.getChildren().size(); i++){
-            TreeNode groupNode = crParent.getChildren().get(i);
-            String id = ((CriterionsTreeHolder)groupNode.getViewHolder()).id+"";
 
-            JsonObject group = new JsonObject();
-            group.add("alternatives", new JsonObject());
-            JsonObject alterGroup = group.get("alternatives").getAsJsonObject();
-
-            EditText name = (EditText)groupNode.getViewHolder().getView().findViewById(R.id.criterion_add_text);
-            group.add(id, new JsonPrimitive(name.getText().toString()));
-            crCount++;
-
-            int altCount = 0;
-            for(int j = 0; j < groupNode.getChildren().size(); j++){
-                TreeNode node = groupNode.getChildren().get(j);
-                String nodeType = ((CriterionsTreeHolder) node.getViewHolder()).nodeType;
-                EditText nodeNameView = (EditText)node.getViewHolder().getView().findViewById(R.id.criterion_add_text);
-                String nodeId = ((CriterionsTreeHolder) node.getViewHolder()).id+"";
-
-                if(nodeType == nodeType_criterion){
-                    crCount++;
-                    group.add(nodeId, new JsonPrimitive(nodeNameView.getText().toString()));
-                }else if(nodeType == nodeType_alternative){
-                    altCount++;
-                    alterGroup.add(nodeId, new JsonPrimitive(nodeNameView.getText().toString()));
-                }
-            }
-            alterGroup.add("altCount", new JsonPrimitive(altCount));
-            tree.add(alterGroup);
-        }
-        //tree.add("crCount", new JsonPrimitive(crCount));
-        return tree;
-    }
 }
 class treeSerializer implements JsonSerializer<TreeNode>
 {
@@ -197,24 +162,25 @@ class treeSerializer implements JsonSerializer<TreeNode>
     public JsonElement serialize(TreeNode src, Type typeOfSrc, JsonSerializationContext context) {
         JsonArray root = new JsonArray();
 
-        int nodeNameEditText = R.id.criterion_add_text;
         for(TreeNode criterionNode : src.getChildren()){
-            JsonObject criterionJson = new JsonObject();
-            EditText criterionEditText = (EditText)criterionNode.getViewHolder().getView().findViewById(nodeNameEditText);
+            String crName = ((CriterionsTreeHolder)criterionNode.getViewHolder()).getValues().name;
+            Integer crId = ((CriterionsTreeHolder)criterionNode.getViewHolder()).getValues().id;
+            JsonObject criterion = new JsonObject();
+            criterion.add("id", new JsonPrimitive(crId));
+            criterion.add("name", new JsonPrimitive(crName));
 
-            criterionJson.add("name", new JsonPrimitive(criterionEditText.getText().toString()));
+            JsonArray alternatives = new JsonArray();
 
-            JsonArray alternativesList = new JsonArray();
-
-            for(TreeNode alternativeNode : criterionNode.getChildren()){
-                JsonObject alternativeJson = new JsonObject();
-
-                EditText alternativeEditText = (EditText)alternativeNode.getViewHolder().getView().findViewById(nodeNameEditText);
-                alternativeJson.add("name", new JsonPrimitive(alternativeEditText.getText().toString()));
-                alternativesList.add(alternativeJson);
+            for (TreeNode altNode : criterionNode.getChildren()){
+                JsonObject alternative = new JsonObject();
+                String altName = ((CriterionsTreeHolder)altNode.getViewHolder()).getValues().name;
+                Integer altId = ((CriterionsTreeHolder)altNode.getViewHolder()).getValues().id;
+                alternative.add("id", new JsonPrimitive(altId));
+                alternative.add("name", new JsonPrimitive(altName));
+                alternatives.add(alternative);
             }
-            criterionJson.add("alternatives", alternativesList);
-            root.add(criterionJson);
+            criterion.add("children", alternatives);
+            root.add(criterion);
         }
 
         return root;
@@ -230,21 +196,29 @@ class treeUnserializer implements JsonDeserializer<TreeNode>{
         item.text = "Критерии";
         TreeNode rootNode = new TreeNode(defItemCriterions);
 
+        HashMap<Integer, TreeNode> nodes = new HashMap<>();
         for(int i = 0; i < list.size(); i++){
             JsonObject criterion = list.get(i).getAsJsonObject();
-            CriterionsTreeHolder.IconTreeItem crItemIcon = new CriterionsTreeHolder.IconTreeItem();
-            CriterionsTreeHolder holder = new CriterionsTreeHolder(currentActivity.activity,  currentActivity.activity.getWindow());
-            TreeNode criterionNode = new TreeNode(crItemIcon).setViewHolder(holder);
-            EditText criterionName = (EditText)criterionNode.getViewHolder().getView().findViewById(R.id.criterion_add_text);
-            criterionName.setText(criterion.get("name").toString());
 
-            JsonArray alternatives = criterion.get("alternatives").getAsJsonArray();
+            CriterionsTreeHolder.IconTreeItem crItemIcon = new CriterionsTreeHolder.IconTreeItem();
+            TreeNode criterionNode = new TreeNode(crItemIcon).setViewHolder( new CriterionsTreeHolder(currentActivity.activity));
+
+            CriterionsTreeHolder holder = (CriterionsTreeHolder)criterionNode.getViewHolder();
+            holder.setValues(criterion.get("id").getAsInt(), criterion.get("name").getAsString());
+
+            JsonArray alternatives = criterion.get("children").getAsJsonArray();
             for(int j = 0; j < alternatives.size(); j++){
                 JsonObject alternative = alternatives.get(j).getAsJsonObject();
-                CriterionsTreeHolder altHolder = new CriterionsTreeHolder(currentActivity.activity,  currentActivity.activity.getWindow());
+                CriterionsTreeHolder altHolder = new CriterionsTreeHolder(currentActivity.activity);
                 TreeNode alternativeNode = new TreeNode(crItemIcon).setViewHolder(altHolder);
-                EditText alternativeName = (EditText)alternativeNode.getViewHolder().getView().findViewById(R.id.criterion_add_text);
-                alternativeName.setText(alternative.get("name").toString());
+
+                int altId = alternative.get("id").getAsInt();
+                if(nodes.containsKey(altId)){
+                    altHolder.setValues(((CriterionsTreeHolder)nodes.get(altId).getViewHolder()).getValues());
+                }else{
+                    String altName = alternative.get("name").getAsString();
+                    ((CriterionsTreeHolder)alternativeNode.getViewHolder()).setValues(altId, altName);
+                }
                 criterionNode.addChildren(alternativeNode);
             }
             rootNode.addChildren(criterionNode);

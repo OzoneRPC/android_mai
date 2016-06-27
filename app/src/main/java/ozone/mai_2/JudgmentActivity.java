@@ -18,8 +18,10 @@ import com.unnamed.b.atv.model.TreeNode;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by Ozone on 09.05.2016.
@@ -31,8 +33,7 @@ public class JudgmentActivity extends AppCompatActivity {
     private int notCompleted = 0;
     private LinearLayout seekbarContainer;
     private ProjectControl control;
-    private static ArrayList<Activity> activities=new ArrayList<Activity>();
-    private JsonObject projectTree;
+    private static ArrayList<Activity> activities = new ArrayList<Activity>();
     private ArrayList<String> crList;
 
     private int judgType;
@@ -48,20 +49,11 @@ public class JudgmentActivity extends AppCompatActivity {
 
         currentProject = control.getProjectByName(nameFromExtras);
 
-        projectTree = currentProject.getProjectTree();
+        //projectTree = currentProject.getProjectTree();
         Intent intent = getIntent();
         judgType  = intent.getIntExtra("type", -1);
         changed = intent.getBooleanExtra("changed", false);
 
-        crList = new ArrayList<>();
-
-        for(Map.Entry<String, JsonElement> entry : projectTree.entrySet()){
-            for(Map.Entry<String, JsonElement> group : entry.getValue().getAsJsonObject().entrySet()){
-                if(group.getKey() != "alternatives"){
-                    crList.add(group.getKey());
-                }
-            }
-        }
 
         switch (judgType){
             case 0:
@@ -73,22 +65,22 @@ public class JudgmentActivity extends AppCompatActivity {
                 break;
             case 1:
                 int alternativesCount = 0;
-                if(!changed) {
-                    for (int i = 0; i < currentProject.alternativesMaxtrix.size(); i++) {
+                /*if(!changed) {
+                    for (int i = 0; i < currentProject.alternativesMatrix.size(); i++) {
 
-                        for (int j = 0; j < currentProject.alternativesMaxtrix.get(i).size(); j++) {
+                        for (int j = 0; j < currentProject.alternativesMatrix.get(i).size(); j++) {
                             alternativesCount++;
                         }
                     }
                     currentProject.alternativesPostions = control.initializePositionsList(alternativesCount);
-                }
+                }*/
                 setTitle(R.string.judgment_alternatives_title);
                 alternatives();
                 break;
         }
 
     }
-    private void addComboSeekBar(final int row, final int column, final int criterionNumber){
+    private void addComboSeekBar(final int rowKey, final int colKey, final int crId){
         final View view = getLayoutInflater().inflate(R.layout.custom_seekbar, null);
         ComboSeekBar comboSeekBar = (ComboSeekBar)view.
                 findViewById(R.id.comboseekbar);
@@ -96,19 +88,33 @@ public class JudgmentActivity extends AppCompatActivity {
         TextView criterionA = (TextView)view.findViewById(R.id.item_a);
         TextView criterionB = (TextView)view.findViewById(R.id.item_b);
 
-        if(criterionNumber == -1) {
+        if(crId == -1) {
 
-            EditText a = (EditText) getTreeNodeById(Integer.parseInt(crList.get(row))).getViewHolder().getView().findViewById(R.id.criterion_add_text);
-            EditText b = (EditText) getTreeNodeById(Integer.parseInt(crList.get(column))).getViewHolder().getView().findViewById(R.id.criterion_add_text);
-            criterionA.append(a.getText().toString().replace("\"", "").replace("\\", ""));
-            criterionB.append(b.getText().toString().replace("\"", "").replace("\\", ""));
+            TreeNode aNode = getNodeById(rowKey);
+            TreeNode bNode = getNodeById(colKey);
+            if(aNode != null && bNode != null){
+                String aText = ((CriterionsTreeHolder)aNode.getViewHolder()).getValues().name;
+                String bText = ((CriterionsTreeHolder)bNode.getViewHolder()).getValues().name;
+
+                criterionA.append(aText.replace("\"", "").replace("\\", ""));
+                criterionB.append(bText.replace("\"", "").replace("\\", ""));
+            }
+
         }else{
-            EditText nameEdit = (EditText) currentProject.tree.getChildren().get(criterionNumber).getViewHolder().getView().findViewById(R.id.criterion_add_text);
-            EditText a = (EditText) currentProject.tree.getChildren().get(criterionNumber).getChildren().get(row).getViewHolder().getView().findViewById(R.id.criterion_add_text);
-            EditText b = (EditText) currentProject.tree.getChildren().get(criterionNumber).getChildren().get(column).getViewHolder().getView().findViewById(R.id.criterion_add_text);
-            criterionName.setText(nameEdit.getText().toString().replace("\"", "").replace("\\", ""));
-            criterionA.append(a.getText().toString().replace("\"", "").replace("\\", ""));
-            criterionB.append(b.getText().toString().replace("\"", "").replace("\\", ""));
+
+            TreeNode crNode = getNodeById(crId);
+            TreeNode aNode = getNodeById(rowKey);
+            TreeNode bNode = getNodeById(colKey);
+            if(aNode != null && bNode != null && crNode != null){
+                String crText = ((CriterionsTreeHolder)crNode.getViewHolder()).getValues().name;
+                String aText = ((CriterionsTreeHolder)aNode.getViewHolder()).getValues().name;
+                String bText = ((CriterionsTreeHolder)bNode.getViewHolder()).getValues().name;
+
+                criterionName.setText(crText.replace("\"", "").replace("\\", ""));
+                criterionA.append(aText.replace("\"", "").replace("\\", ""));
+                criterionB.append(bText.replace("\"", "").replace("\\", ""));
+
+            }
         }
 
 
@@ -126,25 +132,25 @@ public class JudgmentActivity extends AppCompatActivity {
         comboSeekBar.setAdapter(points);
         int selection;
 
-        if(changed){
+        /*if(changed){
             if(judgType == 0){
                 selection = currentProject.criterionsPositions.get(id);
             }else{
                 selection = currentProject.alternativesPostions.get(id);
             }
         }else{
-            selection = 4;
-        }
+        }*/
+        selection = 4;
         comboSeekBar.setSelection(selection);
 
         comboSeekBar.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v, int position, long position_id) {
 
-                if(judgType == 0){
+                /*if(judgType == 0){
                     currentProject.criterionsPositions.set(v.getId(), position);
                 }else{
                     currentProject.alternativesPostions.set(v.getId(), position);
-                }
+                }*/
                 double value = getComboSeebarValueByPosition(position);
                 double invertedValue;
                 if(position < 4){
@@ -153,12 +159,12 @@ public class JudgmentActivity extends AppCompatActivity {
                 }else{
                     invertedValue = 1.0/value;
                 }
-                if(criterionNumber == -1) {
-                    currentProject.criterionsMatrix.get(row).set(column, value);
-                    currentProject.criterionsMatrix.get(column).set(row, invertedValue);
+                if(crId == -1) {
+                    currentProject.criterionsMatrix.get(rowKey).put(colKey, value);
+                    currentProject.criterionsMatrix.get(colKey).put(rowKey, invertedValue);
                 }else{
-                    currentProject.alternativesMaxtrix.get(criterionNumber).get(row).set(column, value);
-                    currentProject.alternativesMaxtrix.get(criterionNumber).get(column).set(row, invertedValue);
+                    currentProject.alternativesMatrix.get(crId).get(rowKey).put(colKey, value);
+                    currentProject.alternativesMatrix.get(crId).get(colKey).put(rowKey, invertedValue);
                 }
                 notCompleted--;
                 if(notCompleted == 0 || changed){
@@ -177,16 +183,27 @@ public class JudgmentActivity extends AppCompatActivity {
         seekbarContainer.addView(view);
     }
     private void criterions(){
-        int size = currentProject.criterionsMatrix.size();
-        for(int i = 0; i < size-1; i++){
-            for(int j = 1; j <= currentProject.criterionsMatrix.get(i).size() - 1 - i; j++ ){
-                addComboSeekBar(i , j+i, -1);
+
+        List<Integer> columnKeys = new ArrayList<>(currentProject.criterionsMatrix.keySet());
+
+        for (int i = 0; i < columnKeys.size()-1; i++){
+            HashMap<Integer, Double> rowMap = (HashMap<Integer, Double>)currentProject.criterionsMatrix.get(columnKeys.get(i));
+            List<Integer> rowKeys = new ArrayList<Integer>(rowMap.keySet());
+
+            for(int j = 1; j <= rowKeys.size() - 1 - i; j++ ){
+                int rowKey = columnKeys.get(i);
+                int colKey = columnKeys.get(j+i);
+                addComboSeekBar(rowKey, colKey, -1);
                 notCompleted++;
             }
         }
+
+
+
+
     }
     private void alternatives(){
-        for(int i = 0; i < currentProject.alternativesMaxtrix.size(); i++){
+        /*for(int i = 0; i < currentProject.alternativesMaxtrix.size(); i++){
 
             for(int j = 0; j < currentProject.alternativesMaxtrix.get(i).size() - 1; j++){
                 for(int k = 1; k <= currentProject.alternativesMaxtrix.get(i).get(j).size() - 1 - j; k++){
@@ -194,7 +211,30 @@ public class JudgmentActivity extends AppCompatActivity {
                     notCompleted++;
                 }
             }
+        }*/
+
+        List<Integer> crIds = new ArrayList<>(currentProject.alternativesMatrix.keySet());
+        for (int i=0; i < crIds.size(); i++) {
+            int crKey = crIds.get(i);
+
+            List<Integer> altColIds = new ArrayList<>(((LinkedHashMap<Integer, LinkedHashMap<Integer, Double>>) currentProject.alternativesMatrix.get(crKey)).keySet());
+
+            for (int j = 0; j < altColIds.size() - 1; j++) {
+                int altRowKey = altColIds.get(j);
+
+                List<Integer> altRowIds = new ArrayList<>(((LinkedHashMap<Integer, Double>) currentProject.alternativesMatrix.get(crKey).get(altRowKey)).keySet());
+
+                for (int k = 1; k <= altRowIds.size() - 1 - j; k++) {
+                    int alColKey = altRowIds.get(k + j);
+
+                    addComboSeekBar(altRowKey, alColKey, crKey);
+                    notCompleted++;
+                }
+
+            }
         }
+
+
     }
     private int getComboSeebarValueByPosition(int position){
         int result = -1;
@@ -280,15 +320,20 @@ public class JudgmentActivity extends AppCompatActivity {
         super.onDestroy();
         activities.remove(this);
     }
-    public TreeNode getTreeNodeById(int id){
-        TreeNode node = null;
+    public TreeNode getNodeById(int id){
         for(int i=0; i < currentProject.tree.getChildren().size(); i++){
+
+            int crId = ((CriterionsTreeHolder)currentProject.tree.getChildren().get(i).getViewHolder()).getValues().id;
+
+            if(crId == id){
+                return currentProject.tree.getChildren().get(i);
+            }
             for(int j=0; j < currentProject.tree.getChildren().get(i).size(); j++){
-                if(id == ((CriterionsTreeHolder)currentProject.tree.getChildren().get(i).getChildren().get(j).getViewHolder()).id){
-                    node =  currentProject.tree.getChildren().get(i).getChildren().get(j);
+                if(id == ((CriterionsTreeHolder)currentProject.tree.getChildren().get(i).getChildren().get(j).getViewHolder()).getValues().id){
+                    return currentProject.tree.getChildren().get(i).getChildren().get(j);
                 }
             }
         }
-        return node;
+        return null;
     }
 }

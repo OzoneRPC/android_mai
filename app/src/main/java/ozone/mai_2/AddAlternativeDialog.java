@@ -36,7 +36,7 @@ public class AddAlternativeDialog extends DialogFragment {
         final int crId = getArguments().getInt("id");
         LayoutInflater inflater = getActivity().getLayoutInflater();
 
-        builder.setTitle("Добавить альтернатив");  // заголовок
+        builder.setTitle("Добавить альтернативу");  // заголовок
         builder.setMessage("Добавьте существующую, либо укажите название новой"); // сообщение]
 
 
@@ -60,35 +60,49 @@ public class AddAlternativeDialog extends DialogFragment {
 
         builder.setPositiveButton("Добавить", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                TreeNode newNode;
+                TreeNode newNode = null;
                 String name = "";
                 CriterionsTreeHolder.IconTreeItem crItemIcon = new CriterionsTreeHolder.IconTreeItem();
 
-                if(AddProjectActivity.altNames.size() > 0){
+                if(AddProjectActivity.altNames.size() < 0){//!!!!!!
                     long selected_id = spinner.getSelectedItemId();
-                    TreeNode existNode = AddProjectActivity.altNodes.get(AddProjectActivity.altIds.get((int)selected_id));
 
-                    newNode = new TreeNode(crItemIcon).setViewHolder(existNode.getViewHolder());
-                    name = ((EditText)newNode.getViewHolder().getView().findViewById(R.id.criterion_add_text)).getText().toString();
+                    int i = 0;
+                    int nodeKey = -1;
+                    for (Integer key : AddProjectActivity.altNodes.keySet()){
+
+                        if(i == (int)selected_id){
+                            nodeKey = key;
+                            break;
+                        }
+                        i++;
+                    }
+
+                    if(nodeKey != -1) {
+                        CriterionsTreeHolder existHolder = ((CriterionsTreeHolder) AddProjectActivity.altNodes.get(nodeKey).getViewHolder());
+                        newNode = new TreeNode(crItemIcon).setViewHolder(new CriterionsTreeHolder(getActivity()));
+
+                        ((CriterionsTreeHolder) newNode.getViewHolder()).setValues(existHolder.getValues());
+                    }
                 }else{
 
                     EditText altNameEdit = (EditText)getDialog().findViewById(R.id.dialog_alternative_name);
                     name = altNameEdit.getText().toString();
-                    newNode = new TreeNode(crItemIcon).setViewHolder(new CriterionsTreeHolder(getActivity(), getActivity().getWindow()));
-                    EditText edit = (EditText)newNode.getViewHolder().getView().findViewById(R.id.criterion_add_text);
-                    edit.setText(name);
-                    RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) edit.getLayoutParams();
+                    newNode = new TreeNode(crItemIcon).setViewHolder(new CriterionsTreeHolder(getActivity()));
 
-                    params.leftMargin = 25;
-                    edit.setLayoutParams(params);
-                    Button add = (Button)newNode.getViewHolder().getView().findViewById(R.id.add);
-                    add.setVisibility(View.INVISIBLE);
+                    ((CriterionsTreeHolder)newNode.getViewHolder()).setName(name);
 
                 }
+                EditText editTextName = (EditText)newNode.getViewHolder().getView().findViewById(R.id.criterion_add_text);
 
+                RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) editTextName.getLayoutParams();
+                params.leftMargin = 25;
+                editTextName.setLayoutParams(params);
+
+                Button buttonAdd = (Button)newNode.getViewHolder().getView().findViewById(R.id.add);
+                buttonAdd.setVisibility(View.INVISIBLE);
 
                 activity.addAlternative(crId, newNode, name);
-
 
                 dialog.dismiss();
             }
