@@ -11,6 +11,8 @@ package ozone.mai_2;
         import android.widget.ArrayAdapter;
         import android.widget.Button;
         import android.widget.EditText;
+        import android.widget.RadioButton;
+        import android.widget.RadioGroup;
         import android.widget.RelativeLayout;
         import android.widget.Spinner;
 
@@ -41,6 +43,11 @@ public class AddAlternativeDialog extends DialogFragment {
 
 
         View view = inflater.inflate(R.layout.add_alternative_dialog, null);
+
+
+        RadioGroup radioGroup = (RadioGroup)view.findViewById(R.id.select_add_type);
+        final RadioButton addNew = (RadioButton)view.findViewById(R.id.radio_add_new);
+        final RadioButton addExist = (RadioButton)view.findViewById(R.id.radio_add_exist);
 
         final  Spinner spinner = (Spinner)view.findViewById(R.id.altSpinner);
 
