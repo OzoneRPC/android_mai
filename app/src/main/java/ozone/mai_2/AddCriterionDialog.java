@@ -16,9 +16,7 @@ import com.unnamed.b.atv.model.TreeNode;
  * Created by Ozone on 04.05.2016.
  */
 public class AddCriterionDialog extends DialogFragment{
-    int type_alternative = 0;
-    int type_criterion = 1;
-    int nodeId;
+
     private AddProjectActivity activity;
 
     @Override

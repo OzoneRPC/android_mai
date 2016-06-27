@@ -28,7 +28,7 @@ public class CriterionsTreeHolder extends TreeNode.BaseNodeViewHolder<Criterions
     public int id;
     public int index = 1;
 
-    private HolderValues values;
+    public  HolderValues values;
 
     public String name;
     public CriterionsTreeHolder(Context context){
@@ -39,20 +39,23 @@ public class CriterionsTreeHolder extends TreeNode.BaseNodeViewHolder<Criterions
     public View createNodeView(final TreeNode node, final IconTreeItem value) {
         final LayoutInflater inflater = LayoutInflater.from(currentContext);
         final View view = inflater.inflate(R.layout.tree_item, null, false);
-        final EditText criterion_add_text = (EditText)view.findViewById(R.id.criterion_add_text);
+        final EditText nodeEditText = (EditText)view.findViewById(R.id.criterion_add_text);
         final TextView add = (TextView)view.findViewById(R.id.add);
         final TextView delete = (TextView)view.findViewById(R.id.delete);
+        final TextView nodeNameText = (TextView)view.findViewById(R.id.node_name_view);
 
-
-        criterion_add_text.setText(R.string.criterion);
+        nodeEditText.setText(R.string.criterion);
 
         Random r = new Random();
 
         id = (r.nextInt(80 - 65) * (int)(System.currentTimeMillis()/10000));
 
-        values = new HolderValues();
+        if(values == null){
+            values = new HolderValues();
+            values.id = id;
+        }
 
-        values.id = id;
+
         delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -73,26 +76,42 @@ public class CriterionsTreeHolder extends TreeNode.BaseNodeViewHolder<Criterions
                 dialog.show(manager, "dialog");
             }
         });
-        criterion_add_text.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+        nodeEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 //getTreeView().collapseAll();
                 if(!hasFocus){
+
                     values.name = ((TextView)v).getText().toString();
+                    nodeNameText.setText(((TextView)v).getText().toString());
+                    v.setVisibility(View.INVISIBLE);
+                    nodeNameText.setVisibility(View.VISIBLE);
+
+
                     for(TreeNode crNode : AddProjectActivity.crParent.getChildren()){
 
-                        EditText  crnameEdit = (EditText)crNode.getViewHolder().getView().findViewById(R.id.criterion_add_text);
-                        if(!(crnameEdit.getText().toString().equals(((CriterionsTreeHolder)crNode.getViewHolder()).getValues().name))){
-                            crnameEdit.setText(((CriterionsTreeHolder)crNode.getViewHolder()).getValues().name);
-                        }
                         for(TreeNode altNode : crNode.getChildren()){
                             EditText  altnameEdit = (EditText)altNode.getViewHolder().getView().findViewById(R.id.criterion_add_text);
+                            TextView nodeNameText = (TextView)altNode.getViewHolder().getView().findViewById(R.id.node_name_view);
+                            String viewString = altnameEdit.getText().toString();
+                            String valueString = ((CriterionsTreeHolder)altNode.getViewHolder()).getValues().name;
                             if(!(altnameEdit.getText().toString().equals(((CriterionsTreeHolder)altNode.getViewHolder()).getValues().name))){
                                 altnameEdit.setText(((CriterionsTreeHolder)altNode.getViewHolder()).getValues().name);
+                                nodeNameText.setText(((CriterionsTreeHolder)altNode.getViewHolder()).getValues().name);
                             }
                         }
                     }
                 }
+            }
+        });
+        nodeNameText.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                v.setVisibility(View.INVISIBLE);
+                nodeEditText.setText(((TextView)v).getText());
+                nodeEditText.setVisibility(View.VISIBLE);
+                nodeEditText.requestFocus();
+                return true;
             }
         });
 
@@ -101,7 +120,9 @@ public class CriterionsTreeHolder extends TreeNode.BaseNodeViewHolder<Criterions
     }
     public void setName(String name){
         EditText text = (EditText)this.getView().findViewById(R.id.criterion_add_text);
+        TextView nameView = (TextView)this.getView().findViewById(R.id.node_name_view);
         text.setText(name);
+        nameView.setText(name);
         values.name = name;
     }
     public void setId(int id){
@@ -113,6 +134,10 @@ public class CriterionsTreeHolder extends TreeNode.BaseNodeViewHolder<Criterions
         }
         this.values.id = id;
         this.values.name = name;
+        EditText text = (EditText)this.getView().findViewById(R.id.criterion_add_text);
+        TextView nameView = (TextView)this.getView().findViewById(R.id.node_name_view);
+        text.setText(name);
+        nameView.setText(name);
     }
     public HolderValues getValues(){
         return this.values;
@@ -121,6 +146,8 @@ public class CriterionsTreeHolder extends TreeNode.BaseNodeViewHolder<Criterions
     public void setValues(HolderValues newValues){
         this.values = newValues;
         EditText text = (EditText)this.getView().findViewById(R.id.criterion_add_text);
+        TextView nameView = (TextView)this.getView().findViewById(R.id.node_name_view);
+        nameView.setText(newValues.name);
         text.setText(newValues.name);
     }
 
@@ -130,6 +157,6 @@ public class CriterionsTreeHolder extends TreeNode.BaseNodeViewHolder<Criterions
     }
 }
 class HolderValues{
-    int id;
+    Integer id;
     String name;
 }
