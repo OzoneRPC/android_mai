@@ -16,6 +16,8 @@
     <string name="alternative">Альтеранатива</string>
     <string name="make_result">Произвести вычисления</string>
 
+    <string name="add_new_project">Создать новый проект</string>
+    <string name="menu_item1">item1</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>

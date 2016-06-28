@@ -1,6 +1,7 @@
 package ozone.mai_2;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -32,7 +33,6 @@ public class JudgmentActivity extends AppCompatActivity {
     private int id = 0;
     private int notCompleted = 0;
     private LinearLayout seekbarContainer;
-    private ProjectControl control;
     private static ArrayList<Activity> activities = new ArrayList<Activity>();
     private ArrayList<String> crList;
 
@@ -42,12 +42,11 @@ public class JudgmentActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.judgment);
         activities.add(this);
-        control = new ProjectControl(this);
+
         seekbarContainer = (LinearLayout)findViewById(R.id.comboseekbar_l_laylout);
 
-        String nameFromExtras = this.getIntent().getExtras().getString("project_name");
 
-        currentProject = control.getProjectByName(nameFromExtras);
+        currentProject = CurrentProject.getCurrentProject();
 
         //projectTree = currentProject.getProjectTree();
         Intent intent = getIntent();
@@ -58,7 +57,7 @@ public class JudgmentActivity extends AppCompatActivity {
         switch (judgType){
             case 0:
                 if(!changed) {
-                    currentProject.criterionsPositions = control.initializePositionsList(currentProject.criterionsMatrix.size());
+                    currentProject.criterionsPositions = ProjectControl.initializePositionsList(currentProject.criterionsMatrix.size());
                 }
                 setTitle(R.string.judgment_criterions_title);
                 criterions();
@@ -72,7 +71,7 @@ public class JudgmentActivity extends AppCompatActivity {
                             alternativesCount++;
                         }
                     }
-                    currentProject.alternativesPostions = control.initializePositionsList(alternativesCount);
+                    currentProject.alternativesPostions = ProjectControl.initializePositionsList(alternativesCount);
                 }*/
                 setTitle(R.string.judgment_alternatives_title);
                 alternatives();
@@ -82,8 +81,7 @@ public class JudgmentActivity extends AppCompatActivity {
     }
     private void addComboSeekBar(final int rowKey, final int colKey, final int crId){
         final View view = getLayoutInflater().inflate(R.layout.custom_seekbar, null);
-        ComboSeekBar comboSeekBar = (ComboSeekBar)view.
-                findViewById(R.id.comboseekbar);
+        ComboSeekBar comboSeekBar = (ComboSeekBar)view.findViewById(R.id.comboseekbar);
         TextView criterionName = (TextView)view.findViewById(R.id.criterion_name);
         TextView criterionA = (TextView)view.findViewById(R.id.item_a);
         TextView criterionB = (TextView)view.findViewById(R.id.item_b);
@@ -306,10 +304,16 @@ public class JudgmentActivity extends AppCompatActivity {
         finish();
     }
     private void saveAndExit(){
-        control.updateProject(currentProject);
+        ProgressDialog progress = new ProgressDialog(this);
+        progress.setTitle("Loading");
+        progress.setMessage("Wait while loading...");
+        progress.show();
+
+        ProjectControl.updateProject(currentProject);
+
+        progress.dismiss();
 
         Intent intent = new Intent();
-        intent.putExtra("project_name", currentProject.name);
         intent.putExtra("completed_type",judgType);
         setResult(RESULT_OK, intent);
         finish();

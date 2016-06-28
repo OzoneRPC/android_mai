@@ -35,7 +35,6 @@ import java.util.Map;
  */
 public class AddProjectActivity extends AppCompatActivity {
 
-    private ProjectControl control;
     private TreeNode crRoot;
     public static TreeNode crParent;
     private JsonObject criterionsList;
@@ -53,7 +52,6 @@ public class AddProjectActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.add_project);
         setupParent(findViewById(R.id.add_project_layout));
-        control = new ProjectControl(this);
 
         crNodes = new HashMap<>();
         criterionsList = new JsonObject();
@@ -85,7 +83,7 @@ public class AddProjectActivity extends AppCompatActivity {
                 EditText project_name = (EditText)findViewById(R.id.projectName);
                 EditText project_objective = (EditText)findViewById(R.id.projectObjective);
 
-                control.saveProject(project_name.getText().toString(), project_objective.getText().toString(), crParent);
+                ProjectControl.saveProject(project_name.getText().toString(), project_objective.getText().toString(), crParent);
 
                 Intent intent = new Intent("android.intent.action.CHOOSE_JUDGMENT");
                 String name = project_name.getText().toString();
@@ -93,9 +91,7 @@ public class AddProjectActivity extends AppCompatActivity {
                 startActivityForResult(intent, 1);
             }
         });
-
     }
-
 
     public void addCriterion(String name){
 

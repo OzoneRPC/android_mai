@@ -19,6 +19,7 @@ android:weightSum="1">
         android:id="@+id/projects_empty_create_new"
         android:layout_gravity="center"
         android:textColor="@color/accent_material_light"
-        android:visibility="invisible" />
+        android:visibility="invisible"
+        android:layout_marginBottom="25dp" />
 
 </FrameLayout>

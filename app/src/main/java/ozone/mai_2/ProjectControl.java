@@ -38,18 +38,17 @@ import java.util.Set;
  */
 
 public class ProjectControl {
-    protected Gson gson = new GsonBuilder().create();
-    protected SharedPreferences projects;
+    protected static SharedPreferences projects;
     protected static String KEY_PROJECTS = "projects";
-    protected String existProjectsKey = "exitst_projects";
-    protected String projectKey = "project";
-    private Type type_project;
-    private Type type_treeNode;
+    protected static String existProjectsKey = "exitst_projects";
+    protected static String projectKey = "project";
+    private static Type type_project;
+    private static Type type_treeNode;
 
     public static String nodeType_alternative = "alternative";
     public static String nodeType_criterion = "criterion";
 
-    public MAI mai = new MAI();
+    public static MAI mai = new MAI();
 
     public ProjectControl(Activity activity){
         currentActivity.activity = activity;
@@ -58,10 +57,10 @@ public class ProjectControl {
         type_project = new TypeToken<Project>(){}.getType();
         type_treeNode = new TypeToken<TreeNode>(){}.getType();
     }
-    public Map getAllProjects(){
+    public static Map getAllProjects(){
         return (LinkedHashMap)projects.getAll();
     }
-    public void updateExistProjectsList(String name){
+    public static void updateExistProjectsList(String name){
         Set<String> existProjects = projects.getStringSet(existProjectsKey, null);
         if(existProjects == null){
             existProjects = new HashSet<>();
@@ -71,9 +70,7 @@ public class ProjectControl {
         editor.putStringSet(existProjectsKey, existProjects);
         editor.apply();
     }
-
-
-    public void saveProject(String name, String objective, TreeNode tree){
+    public static void saveProject(String name, String objective, TreeNode tree){
         SharedPreferences.Editor editor = projects.edit();
 
         Type type_project = new TypeToken<Project>(){}.getType();
@@ -100,7 +97,7 @@ public class ProjectControl {
         updateExistProjectsList(name);
 
     }
-    public Project getProjectByName(String name){
+    public static Project getProjectByName(String name){
         Project project = null;
         String projectJson = projects.getString(name, null);
         if(projectJson != null){
@@ -112,7 +109,7 @@ public class ProjectControl {
         return project;
     }
 
-    public void updateProject(Project project){
+    public static void updateProject(Project project){
         SharedPreferences.Editor editor = projects.edit();
 
         GsonBuilder builder = new GsonBuilder();
@@ -125,11 +122,11 @@ public class ProjectControl {
         editor.apply();
     }
 
-    public Set<String>  getProjectList(){
+    public static Set<String>  getProjectList(){
         return projects.getStringSet(existProjectsKey, null);
     }
 
-    public void deleteProject(String name){
+    public static void deleteProject(String name){
         Set<String> existProjects = projects.getStringSet(existProjectsKey, null);
         if(existProjects != null){
             existProjects.remove(name);
@@ -141,7 +138,7 @@ public class ProjectControl {
             editor.apply();
         }
     }
-    public List<Integer> initializePositionsList(int count){
+    public static List<Integer> initializePositionsList(int count){
         List<Integer> list = new ArrayList<>();
         for(int i=0; i < count; i++){
             list.add(0);

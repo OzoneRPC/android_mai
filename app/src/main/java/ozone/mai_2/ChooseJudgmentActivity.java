@@ -21,7 +21,6 @@ import java.util.List;
 public class ChooseJudgmentActivity extends AppCompatActivity {
     private int CRITERIONS = 0;
     private int ALTERNATIVES = 1;
-    private ProjectControl control;
     private boolean criterionsMatrixChanged = false;
     private boolean alternativeMatrixChanged = false;
     @Override
@@ -29,13 +28,11 @@ public class ChooseJudgmentActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.choose_judgment);
 
-        control = new ProjectControl(this);
-
-
         final String projectName = this.getIntent().getExtras().getString("project_name");
-        final Intent intent = new Intent("android.intent.action.MAKE_JUDGMENT");
-        intent.putExtra("project_name",projectName);
 
+        CurrentProject.setCurrentProject(ProjectControl.getProjectByName(projectName));
+
+        final Intent intent = new Intent("android.intent.action.MAKE_JUDGMENT");
 
 
         final Button criterionsJudgment = (Button)findViewById(R.id.button_judgment_criterions);
@@ -87,7 +84,7 @@ public class ChooseJudgmentActivity extends AppCompatActivity {
 
         final MAI mai = new MAI();
 
-        final Project project = control.getProjectByName(nameFromExtras);
+        final Project project = CurrentProject.getCurrentProject();
 
         boolean criterionsCrIsNormal = false;
         boolean alternativesCrIsNormal = true;
@@ -105,7 +102,12 @@ public class ChooseJudgmentActivity extends AppCompatActivity {
             }
             TextView criterionResultCr = (TextView) findViewById(R.id.result_cr);
 
-            criterionResultCr.setText("Индекс согласованности: " + cr);
+            String crStr = cr+"";
+            if(Double.isNaN(cr)){
+                crStr = "идеально";
+            }
+
+            criterionResultCr.setText("Индекс согласованности критериев: " + crStr);
         }
         final LinkedHashMap<Integer, LinkedHashMap<Integer,Double>> vectors = new LinkedHashMap<>();
 
@@ -188,7 +190,46 @@ public class ChooseJudgmentActivity extends AppCompatActivity {
                     }
                     project.resultVector = resultVector;
 
-                    control.updateProject(project);
+                    ProjectControl.updateProject(project);
+
+                    Integer altId = -1;
+                    for(int key : resultVector.keySet()){
+
+                        if(altId == -1){
+                            altId = key;
+                        }
+                        if(resultVector.get(key) > resultVector.get(altId)){
+                            altId = key;
+                        }
+                    }
+                    String altName = "";
+                    for(int i=0; i < project.tree.getChildren().size(); i++){
+                        for(int j = 0; j < project.tree.getChildren().get(i).size(); j++){
+                            CriterionsTreeHolder holder = (CriterionsTreeHolder)project.tree.getChildren().get(i).getChildren().get(j).getViewHolder();
+                            int curAltId = holder.getValues().id;
+                            if(curAltId == altId){
+                                altName = holder.getValues().name;
+                            }
+                        }
+                    }
+
+                    TextView resultText = (TextView)findViewById(R.id.result_text);
+                    if(!(altName.equals(""))){
+                        String text = altName + " - наилучшая альтернатива";
+                        resultText.setText(text);
+                    }
+
+                    TextView toProjects = (TextView)findViewById(R.id.to_projects_list);
+                    toProjects.setVisibility(View.VISIBLE);
+                    toProjects.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent("android.intent.action.MAIN");
+                            startActivity(intent);
+                            finish();
+                        }
+                    });
+
                 }
             });
 
