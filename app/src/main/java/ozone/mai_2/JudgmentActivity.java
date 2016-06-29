@@ -34,10 +34,8 @@ public class JudgmentActivity extends AppCompatActivity {
     private int notCompleted = 0;
     private LinearLayout seekbarContainer;
     private static ArrayList<Activity> activities = new ArrayList<Activity>();
-    private ArrayList<String> crList;
-
     private int judgType;
-    private boolean changed;
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.judgment);
@@ -51,28 +49,26 @@ public class JudgmentActivity extends AppCompatActivity {
         //projectTree = currentProject.getProjectTree();
         Intent intent = getIntent();
         judgType  = intent.getIntExtra("type", -1);
-        changed = intent.getBooleanExtra("changed", false);
-
 
         switch (judgType){
             case 0:
-                if(!changed) {
-                    currentProject.criterionsPositions = ProjectControl.initializePositionsList(currentProject.criterionsMatrix.size());
+                if(!currentProject.criterionJudgmentMaked) {
+                    currentProject.crPositions = ProjectControl.initializePositionsList(currentProject.tree.getChildren().size());
                 }
                 setTitle(R.string.judgment_criterions_title);
                 criterions();
                 break;
             case 1:
                 int alternativesCount = 0;
-                /*if(!changed) {
-                    for (int i = 0; i < currentProject.alternativesMatrix.size(); i++) {
+                if(!currentProject.alternativeJudgmentMaked) {
+                    for (int i = 0; i < currentProject.tree.getChildren().size(); i++) {
 
-                        for (int j = 0; j < currentProject.alternativesMatrix.get(i).size(); j++) {
+                        for (int j = 0; j < currentProject.tree.getChildren().get(i).getChildren().size(); j++) {
                             alternativesCount++;
                         }
                     }
-                    currentProject.alternativesPostions = ProjectControl.initializePositionsList(alternativesCount);
-                }*/
+                    currentProject.altPositions = ProjectControl.initializePositionsList(alternativesCount);
+                }
                 setTitle(R.string.judgment_alternatives_title);
                 alternatives();
                 break;
@@ -130,25 +126,28 @@ public class JudgmentActivity extends AppCompatActivity {
         comboSeekBar.setAdapter(points);
         int selection;
 
-        /*if(changed){
-            if(judgType == 0){
-                selection = currentProject.criterionsPositions.get(id);
-            }else{
-                selection = currentProject.alternativesPostions.get(id);
-            }
-        }else{
-        }*/
-        selection = 4;
+        switch (judgType){
+            case 0:
+                selection = currentProject.criterionJudgmentMaked ? currentProject.crPositions.get(id) : 4;
+                break;
+            case 1:
+                selection = currentProject.alternativeJudgmentMaked ? currentProject.altPositions.get(id) : 4;
+                break;
+            default:
+                selection = 4;
+                break;
+
+        }
         comboSeekBar.setSelection(selection);
 
         comboSeekBar.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v, int position, long position_id) {
 
-                /*if(judgType == 0){
-                    currentProject.criterionsPositions.set(v.getId(), position);
+                if(judgType == 0){
+                    currentProject.crPositions.set(v.getId(), position);
                 }else{
-                    currentProject.alternativesPostions.set(v.getId(), position);
-                }*/
+                    currentProject.altPositions.set(v.getId(), position);
+                }
                 double value = getComboSeebarValueByPosition(position);
                 double invertedValue;
                 if(position < 4){
@@ -165,7 +164,7 @@ public class JudgmentActivity extends AppCompatActivity {
                     currentProject.alternativesMatrix.get(crId).get(colKey).put(rowKey, invertedValue);
                 }
                 notCompleted--;
-                if(notCompleted == 0 || changed){
+                if(notCompleted == 0 || ((judgType == 0 && currentProject.criterionJudgmentMaked) || (judgType == 1 && currentProject.alternativeJudgmentMaked))){
                     Button save = (Button)findViewById(R.id.save);
                     save.setVisibility(View.VISIBLE);
                     save.setOnClickListener(new View.OnClickListener(){
@@ -201,15 +200,6 @@ public class JudgmentActivity extends AppCompatActivity {
 
     }
     private void alternatives(){
-        /*for(int i = 0; i < currentProject.alternativesMaxtrix.size(); i++){
-
-            for(int j = 0; j < currentProject.alternativesMaxtrix.get(i).size() - 1; j++){
-                for(int k = 1; k <= currentProject.alternativesMaxtrix.get(i).get(j).size() - 1 - j; k++){
-                    addComboSeekBar(j , k+j, i);
-                    notCompleted++;
-                }
-            }
-        }*/
 
         List<Integer> crIds = new ArrayList<>(currentProject.alternativesMatrix.keySet());
         for (int i=0; i < crIds.size(); i++) {
@@ -228,11 +218,8 @@ public class JudgmentActivity extends AppCompatActivity {
                     addComboSeekBar(altRowKey, alColKey, crKey);
                     notCompleted++;
                 }
-
             }
         }
-
-
     }
     private int getComboSeebarValueByPosition(int position){
         int result = -1;
@@ -259,69 +246,33 @@ public class JudgmentActivity extends AppCompatActivity {
         }
         return result;
     }
-    public int getComboSeebarValueByPositionFull(int position){
-        int result = -1;
-        switch (position){
-            case 0:
-            case 16:
-                result = 9;
-                break;
-            case 1:
-            case 15:
-                result = 8;
-                break;
-            case 2:
-            case 14:
-                result = 7;
-                break;
-            case 3:
-            case 13:
-                result = 6;
-                break;
-            case 4:
-            case 12:
-                result = 5;
-                break;
-            case 5:
-            case 11:
-                result = 4;
-                break;
-            case 6:
-            case 10:
-                result = 3;
-                break;
-            case 7:
-            case 9:
-                result = 2;
-                break;
-        }
-        return result;
-    }
-        @Override
+
+    @Override
     public void onBackPressed() {
         judgType = -1;
         saveAndExit();
         finish();
     }
     private void saveAndExit(){
-        ProgressDialog progress = new ProgressDialog(this);
-        progress.setTitle("Loading");
-        progress.setMessage("Wait while loading...");
-        progress.show();
 
         currentProject.currentStage = "decision_maked";
+
+        switch (judgType){
+            case 0:
+                currentProject.criterionJudgmentMaked = true;
+                break;
+            case 1:
+                currentProject.alternativeJudgmentMaked = true;
+                break;
+        }
         ProjectControl.updateProject(currentProject);
 
-        progress.dismiss();
-
         Intent intent = new Intent();
-        intent.putExtra("completed_type",judgType);
         setResult(RESULT_OK, intent);
         finish();
     }
     @Override
-    public void onDestroy()
-    {
+    public void onDestroy() {
         super.onDestroy();
         activities.remove(this);
     }

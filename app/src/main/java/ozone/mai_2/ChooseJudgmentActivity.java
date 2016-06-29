@@ -28,12 +28,9 @@ public class ChooseJudgmentActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.choose_judgment);
 
-        final String projectName = this.getIntent().getExtras().getString("project_name");
-
-        CurrentProject.setCurrentProject(ProjectControl.getProjectByName(projectName));
+        //final String projectName = this.getIntent().getExtras().getString("project_name");
 
         final Intent intent = new Intent("android.intent.action.MAKE_JUDGMENT");
-
 
         final Button criterionsJudgment = (Button)findViewById(R.id.button_judgment_criterions);
         Button alternativesJudgment = (Button)findViewById(R.id.button_judgment_alternatives);
@@ -42,11 +39,7 @@ public class ChooseJudgmentActivity extends AppCompatActivity {
             @Override
             public void onClick(View v){
                 intent.putExtra("type", CRITERIONS);
-                if(criterionsMatrixChanged){
-                    intent.putExtra("changed", true);
-                }else{
-                    intent.putExtra("changed", false);
-                }
+
                 startActivityForResult(intent, 1);
             }
         });
@@ -54,11 +47,6 @@ public class ChooseJudgmentActivity extends AppCompatActivity {
         alternativesJudgment.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-                if(alternativeMatrixChanged){
-                    intent.putExtra("changed", true);
-                }else{
-                    intent.putExtra("changed", false);
-                }
                 intent.putExtra("type",ALTERNATIVES);
                 startActivityForResult(intent,1);
             }
@@ -69,29 +57,17 @@ public class ChooseJudgmentActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
         super.onActivityResult(requestCode, resultCode, data);
 
-        String nameFromExtras = data.getExtras().getString("project_name");
-        int judgType = data.getExtras().getInt("completed_type");
-
-        switch (judgType){
-            case 0:
-                criterionsMatrixChanged = true;
-                break;
-            case 1:
-                alternativeMatrixChanged = true;
-                break;
-        }
-        SharedPreferences projects = getSharedPreferences("projects", MODE_PRIVATE);
+        final Project project = CurrentProject.getCurrentProject();
 
         final MAI mai = new MAI();
 
-        final Project project = CurrentProject.getCurrentProject();
 
         boolean criterionsCrIsNormal = false;
         boolean alternativesCrIsNormal = true;
 
         LinkedHashMap<Integer, Double> criterionsWmax = new LinkedHashMap<>();
 
-        if(criterionsMatrixChanged) {
+        if(project.criterionJudgmentMaked) {
             criterionsWmax = mai.getWmax(project.criterionsMatrix);
 
 
@@ -111,7 +87,7 @@ public class ChooseJudgmentActivity extends AppCompatActivity {
         }
         final LinkedHashMap<Integer, LinkedHashMap<Integer,Double>> vectors = new LinkedHashMap<>();
 
-        if(alternativeMatrixChanged){
+        if(project.alternativeJudgmentMaked){
             TextView alternativeCr = (TextView)findViewById(R.id.alternatives_cr);
             alternativeCr.setText("");
             List<Integer> crKeySet = new ArrayList<>(project.alternativesMatrix.keySet());
@@ -119,7 +95,6 @@ public class ChooseJudgmentActivity extends AppCompatActivity {
                 LinkedHashMap<Integer,Double> alternativeWmax = mai.getWmax(project.alternativesMatrix.get(crKeySet.get(i)));
                 double cr = mai.getCR(project.alternativesMatrix.get(crKeySet.get(i)), alternativeWmax);
                 if(cr > 0.1){
-                    EditText textfield = (EditText) project.tree.getChildren().get(i).getViewHolder().getView().findViewById(R.id.criterion_add_text);
                     String crName = ((CriterionsTreeHolder)project.tree.getChildren().get(i).getViewHolder()).getValues().name;
                     alternativeCr.append("Индекс согласованности у критерия " + crName + " - " + cr + "\n");
                     alternativesCrIsNormal = false;

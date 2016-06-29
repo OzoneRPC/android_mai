@@ -10,11 +10,10 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="@string/judgment_description"
         android:id="@+id/name_project"
-        android:layout_marginTop="34dp"
+        android:layout_marginLeft="10dp"
         android:layout_alignParentTop="true"
-        android:layout_alignEnd="@+id/run"
-        android:layout_alignParentStart="true"
-        android:layout_marginLeft="10dp" />
+        android:layout_alignEnd="@+id/button_judgment_alternatives"
+        android:layout_marginTop="20dp" />
 
     <Button
         style="?android:attr/buttonStyleSmall"
@@ -24,8 +23,8 @@
         android:text="@string/button_criterions_judgment"
         android:id="@+id/button_judgment_criterions"
         android:layout_below="@+id/name_project"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="40dp" />
+        android:layout_alignEnd="@+id/name_project"
+        android:layout_marginTop="10dp" />
 
     <Button
         style="?android:attr/buttonStyleSmall"
@@ -35,8 +34,9 @@
         android:layout_height="wrap_content"
         android:text="@string/button_alternatives_judgment"
         android:id="@+id/button_judgment_alternatives"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_below="@+id/result_cr"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -44,15 +44,18 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:id="@+id/result_cr"
         android:layout_below="@+id/button_judgment_criterions"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp" />
 
     <ScrollView android:layout_width="match_parent"
         android:layout_height="100dp"
         android:id="@+id/scrollView2"
         android:layout_below="@+id/button_judgment_alternatives"
         android:layout_alignParentStart="true"
-        android:layout_marginLeft="30dp"
-        android:layout_marginRight="30dp">
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_alignParentEnd="true">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -71,15 +74,16 @@
         android:text="@string/make_result"
         android:id="@+id/run"
         android:visibility="invisible"
+        android:layout_marginTop="56dp"
         android:layout_below="@+id/scrollView2"
-        android:layout_alignStart="@+id/button_judgment_alternatives" />
+        android:layout_alignEnd="@+id/name_project" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:id="@+id/result_text"
-        android:layout_below="@+id/run"
+        android:layout_below="@+id/scrollView2"
         android:layout_centerHorizontal="true" />
 
     <TextView
@@ -88,9 +92,10 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="К списку проектов"
         android:id="@+id/to_projects_list"
-        android:layout_below="@+id/result_text"
-        android:layout_centerHorizontal="true"
         android:textColor="@color/accent_material_light"
-        android:visibility="invisible" />
+        android:visibility="invisible"
+        android:layout_below="@+id/run"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp" />
 
 </RelativeLayout>

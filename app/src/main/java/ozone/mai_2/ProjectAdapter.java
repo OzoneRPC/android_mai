@@ -36,61 +36,66 @@ public class ProjectAdapter extends ArrayAdapter<Project> {
         TextView projectResult = (TextView)rowView.findViewById(R.id.project_completed);
 
 
+        final Project project = projects.get(position);
 
-        projectObjective.setText(projects.get(position).objective);
+        projectObjective.setText(project.objective);
         projectDeleteView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ProjectControl.deleteProject(projects.get(position).name);
+                ProjectControl.deleteProject(project.name);
                 projects.remove(position);
                 notifyDataSetChanged();
             }
         });
 
 
-        if(projects.get(position).currentStage.equals("new")){
-            projectChangeView.setText("Оценка");
-        }
-        projectChangeView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        switch (project.currentStage){
+            case "completed":
 
-                CurrentProject.setCurrentProject(projects.get(position));
-                Intent intent = new Intent("android.intent.action.CHOOSE_JUDGMENT");
-                activity.startActivity(intent);
-                activity.finish();
-            }
-        });
+                Integer altId = -1;
+                for(int key : project.resultVector.keySet()){
 
-        if(projects.get(position).resultVector != null){
-            Integer altId = -1;
-            for(int key : projects.get(position).resultVector.keySet()){
-
-                if(altId == -1){
-                    altId = key;
-                }
-                if(projects.get(position).resultVector.get(key) > projects.get(position).resultVector.get(altId)){
-                    altId = key;
-                }
-            }
-            String altName = "";
-            for(int i=0; i < projects.get(position).tree.getChildren().size(); i++){
-                for(int j = 0; j < projects.get(position).tree.getChildren().get(i).size(); j++){
-                    CriterionsTreeHolder holder = (CriterionsTreeHolder)projects.get(position).tree.getChildren().get(i).getChildren().get(j).getViewHolder();
-                    int curAltId = holder.getValues().id;
-                    if(curAltId == altId){
-                        altName = holder.getValues().name;
+                    if(altId == -1){
+                        altId = key;
+                    }
+                    if(project.resultVector.get(key) > project.resultVector.get(altId)){
+                        altId = key;
                     }
                 }
-            }
-            if(!(altName.equals(""))){
-                String text = "наилучшая альтернатива - " + altName;
-                projectResult.setText(text);
-            }
-        }else{
-            projectResult.setText("нет");
+                String altName = "";
+                for(int i=0; i < project.tree.getChildren().size(); i++){
+                    for(int j = 0; j < project.tree.getChildren().get(i).size(); j++){
+                        CriterionsTreeHolder holder = (CriterionsTreeHolder)project.tree.getChildren().get(i).getChildren().get(j).getViewHolder();
+                        int curAltId = holder.getValues().id;
+                        if(curAltId == altId){
+                            altName = holder.getValues().name;
+                        }
+                    }
+                }
+                if(!(altName.equals(""))){
+                    String text = "наилучшая альтернатива - " + altName;
+                    projectResult.setText(text);
+                }
+
+
+                break;
+            case "decision_maked":
+            case "new":
+                projectChangeView.setText("Продолжить");
+                projectChangeView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        CurrentProject.setCurrentProject(project);
+                        Intent intent = new Intent("android.intent.action.CHOOSE_JUDGMENT");
+                        activity.startActivity(intent);
+                    }
+                });
+                projectResult.setText("Нет");
+                break;
+
         }
-        projectNameView.setText(projects.get(position).name);
+        projectNameView.setText(project.name);
 
         return rowView;
     }

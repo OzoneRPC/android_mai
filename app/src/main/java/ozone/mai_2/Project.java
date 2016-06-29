@@ -20,9 +20,11 @@ public class Project{
     public TreeNode tree;
     public LinkedHashMap<Integer,LinkedHashMap<Integer, Double>> criterionsMatrix;
     public LinkedHashMap<Integer,LinkedHashMap<Integer, LinkedHashMap<Integer, Double>>>  alternativesMatrix;
-    public List<Integer> criterionsPositions;
-    public List<Integer> alternativesPostions;
+    public List<Integer> crPositions;
+    public List<Integer> altPositions;
     public LinkedHashMap<Integer, Double> resultVector = null;
     public String currentStage;
+    public boolean criterionJudgmentMaked = false;
+    public boolean alternativeJudgmentMaked = false;
 
 }

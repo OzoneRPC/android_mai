@@ -4,6 +4,7 @@ package ozone.mai_2;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
@@ -14,6 +15,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 
 import com.google.gson.JsonObject;
@@ -39,6 +41,7 @@ public class AddProjectActivity extends AppCompatActivity {
     public static TreeNode crParent;
     private JsonObject criterionsList;
 
+    public static int id = 0;
     public static HashMap<Integer, TreeNode> crNodes;
     public static List<String> altNames;
     public static LinkedHashMap<Integer, TreeNode> altNodes;
@@ -52,6 +55,8 @@ public class AddProjectActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.add_project);
         setupParent(findViewById(R.id.add_project_layout));
+
+        setTitle("Новый проект");
 
         crNodes = new HashMap<>();
         criterionsList = new JsonObject();
@@ -85,8 +90,10 @@ public class AddProjectActivity extends AppCompatActivity {
                 EditText project_name = (EditText)findViewById(R.id.projectName);
                 EditText project_objective = (EditText)findViewById(R.id.projectObjective);
 
-                ProjectControl.saveProject(project_name.getText().toString(), project_objective.getText().toString(), crParent);
 
+                Project newProject = ProjectControl.makeProject(project_name.getText().toString(), project_objective.getText().toString(), crParent);
+                ProjectControl.saveProject(newProject);
+                CurrentProject.setCurrentProject(newProject);
                 Intent intent = new Intent("android.intent.action.CHOOSE_JUDGMENT");
                 String name = project_name.getText().toString();
                 intent.putExtra("project_name", name);
@@ -105,6 +112,10 @@ public class AddProjectActivity extends AppCompatActivity {
 
         holder.setName(name);
 
+        TextView nameView = (TextView)holder.getView().findViewById(R.id.node_name_view);
+
+        nameView.setTypeface(null, Typeface.BOLD);
+
         crNodes.put(holder.getValues().id, newNode);
 
         crParent.addChildren(newNode);
@@ -114,20 +125,7 @@ public class AddProjectActivity extends AppCompatActivity {
         AndroidTreeView tree = crParent.getViewHolder().getTreeView();
         tree.expandLevel(newNode.getLevel());
     }
-    public void addAlternative(Integer crId, TreeNode node, String name, boolean hasParent){
 
-        /*TreeNode cr = AddProjectActivity.crNodes.get(crId);
-
-        CriterionsTreeHolder holder = (CriterionsTreeHolder) node.getViewHolder();
-
-        if(!hasParent) {
-            altNodes.put(holder.getValues().id, node);
-            altNames.add(name);
-        }
-
-        AndroidTreeView tree = cr.getViewHolder().getTreeView();
-        tree.expandLevel(node.getLevel());*/
-    }
     protected void setupParent(View view) {
         //Set up touch listener for non-text box views to hide keyboard.
         if(!(view instanceof EditText)) {

@@ -25,7 +25,6 @@ import java.util.Random;
 public class CriterionsTreeHolder extends TreeNode.BaseNodeViewHolder<CriterionsTreeHolder.IconTreeItem>{
     private Context currentContext;
     public String nodeType;
-    public int id;
     public int index = 1;
 
     public  HolderValues values;
@@ -48,11 +47,10 @@ public class CriterionsTreeHolder extends TreeNode.BaseNodeViewHolder<Criterions
 
         Random r = new Random();
 
-        id = (r.nextInt(80 - 65) * (int)(System.currentTimeMillis()/10000));
 
         if(values == null){
             values = new HolderValues();
-            values.id = id;
+            values.id = AddProjectActivity.id++;
         }
 
 
@@ -121,7 +119,6 @@ public class CriterionsTreeHolder extends TreeNode.BaseNodeViewHolder<Criterions
     public void setName(String name){
         EditText text = (EditText)this.getView().findViewById(R.id.criterion_add_text);
         TextView nameView = (TextView)this.getView().findViewById(R.id.node_name_view);
-        text.setText(name);
         nameView.setText(name);
         values.name = name;
     }

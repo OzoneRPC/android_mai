@@ -70,7 +70,7 @@ public class ProjectControl {
         editor.putStringSet(existProjectsKey, existProjects);
         editor.apply();
     }
-    public static void saveProject(String name, String objective, TreeNode tree){
+    public static void saveProject(Project project){
         SharedPreferences.Editor editor = projects.edit();
 
         Type type_project = new TypeToken<Project>(){}.getType();
@@ -79,6 +79,17 @@ public class ProjectControl {
         builder.registerTypeAdapter(TreeNode.class, new treeSerializer());
         Gson gson = builder.create();
 
+
+        String projectJson = gson.toJson(project, type_project);
+
+        editor.putString(project.name, projectJson);
+
+        editor.apply();
+
+        updateExistProjectsList(project.name);
+
+    }
+    public static Project makeProject(String name, String objective, TreeNode tree){
         Project project = new Project();
         project.name = name;
         project.objective = objective;
@@ -86,17 +97,7 @@ public class ProjectControl {
 
         project.criterionsMatrix = mai.generateCriterionsMatrix(tree.getChildren());
         project.alternativesMatrix = mai.generateAlternativesMatrix(tree.getChildren());
-        project.currentStage = "new";
-
-
-        String projectJson = gson.toJson(project, type_project);
-
-        editor.putString(name, projectJson);
-
-        editor.apply();
-
-        updateExistProjectsList(name);
-
+        return project;
     }
     public static Project getProjectByName(String name){
         Project project = null;
