@@ -92,6 +92,8 @@ public class AddProjectActivity extends AppCompatActivity {
 
 
                 Project newProject = ProjectControl.makeProject(project_name.getText().toString(), project_objective.getText().toString(), crParent);
+
+                newProject.currentStage = "new";
                 ProjectControl.saveProject(newProject);
                 CurrentProject.setCurrentProject(newProject);
                 Intent intent = new Intent("android.intent.action.CHOOSE_JUDGMENT");

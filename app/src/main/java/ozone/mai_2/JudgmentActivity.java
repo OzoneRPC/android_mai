@@ -52,23 +52,10 @@ public class JudgmentActivity extends AppCompatActivity {
 
         switch (judgType){
             case 0:
-                if(!currentProject.criterionJudgmentMaked) {
-                    currentProject.crPositions = ProjectControl.initializePositionsList(currentProject.tree.getChildren().size());
-                }
                 setTitle(R.string.judgment_criterions_title);
                 criterions();
                 break;
             case 1:
-                int alternativesCount = 0;
-                if(!currentProject.alternativeJudgmentMaked) {
-                    for (int i = 0; i < currentProject.tree.getChildren().size(); i++) {
-
-                        for (int j = 0; j < currentProject.tree.getChildren().get(i).getChildren().size(); j++) {
-                            alternativesCount++;
-                        }
-                    }
-                    currentProject.altPositions = ProjectControl.initializePositionsList(alternativesCount);
-                }
                 setTitle(R.string.judgment_alternatives_title);
                 alternatives();
                 break;
@@ -144,9 +131,9 @@ public class JudgmentActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View v, int position, long position_id) {
 
                 if(judgType == 0){
-                    currentProject.crPositions.set(v.getId(), position);
+                    currentProject.crPositions.put(v.getId(), position);
                 }else{
-                    currentProject.altPositions.set(v.getId(), position);
+                    currentProject.altPositions.put(v.getId(), position);
                 }
                 double value = getComboSeebarValueByPosition(position);
                 double invertedValue;

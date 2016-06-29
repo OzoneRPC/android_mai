@@ -28,11 +28,6 @@ public class ProjectsActivity extends AppCompatActivity {
         setContentView(R.layout.projects);
         control = new ProjectControl(this);
 
-        /*ProgressDialog progress = new ProgressDialog(this);
-        progress.setTitle("Loading");
-        progress.setMessage("Wait while loading...");
-        progress.show();
-*/
         List<Project> projectsList = new ArrayList<>();
         if(ProjectControl.getProjectList() != null && ProjectControl.getProjectList().size() != 0) {
             for (String name : ProjectControl.getProjectList()) {
@@ -44,32 +39,8 @@ public class ProjectsActivity extends AppCompatActivity {
             listView.setAdapter(adapter);
         }else{
             setTitle("Проекты - пусто");
-            TextView createIfEmpty = (TextView)findViewById(R.id.projects_empty_create_new);
-            createIfEmpty.setVisibility(View.VISIBLE);
-
-            createIfEmpty.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent("android.intent.action.ADD_PROJECT");
-                    intent.putExtra("type", "new");
-                    startActivity(intent);
-                    finish();
-                }
-            });
-
         }
-        //progress.dismiss();
-        /*button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent("android.intent.action.ADD_PROJECT");
-                startActivity(intent);
-            }
-        });*/
-        /*Intent intent = new Intent("android.intent.action.ADD_PROJECT");
-        startActivity(intent);*/
-        /*AddProjectDialog dialog = new AddProjectDialog();
-        dialog.show(getFragmentManager(), "dlg1");*/
+
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
