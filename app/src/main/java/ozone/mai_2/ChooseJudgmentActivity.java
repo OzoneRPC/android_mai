@@ -190,6 +190,7 @@ public class ChooseJudgmentActivity extends AppCompatActivity {
                     }
                     project.resultVector = resultVector;
 
+                    project.currentStage = "completed";
                     ProjectControl.updateProject(project);
 
                     Integer altId = -1;

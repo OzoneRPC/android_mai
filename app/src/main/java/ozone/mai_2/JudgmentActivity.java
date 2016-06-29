@@ -309,6 +309,7 @@ public class JudgmentActivity extends AppCompatActivity {
         progress.setMessage("Wait while loading...");
         progress.show();
 
+        currentProject.currentStage = "decision_maked";
         ProjectControl.updateProject(currentProject);
 
         progress.dismiss();

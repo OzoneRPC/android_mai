@@ -65,6 +65,7 @@ public class AddProjectActivity extends AppCompatActivity {
 
         crParent = new TreeNode(item).setViewHolder(defItemCriterions);
 
+
         crRoot.addChild(crParent);
 
         final AndroidTreeView tView = new AndroidTreeView(this, crRoot);
@@ -76,6 +77,7 @@ public class AddProjectActivity extends AppCompatActivity {
 
         final Button btnSave = (Button) findViewById(R.id.save);
         final Button btnSaveAndContinue = (Button) findViewById(R.id.saveAndContinue);
+
 
         btnSaveAndContinue.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -155,5 +157,9 @@ public class AddProjectActivity extends AppCompatActivity {
     {
         super.onDestroy();
         activities.remove(this);
+    }
+    @Override
+    public void onBackPressed() {
+
     }
 }

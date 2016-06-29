@@ -86,6 +86,7 @@ public class ProjectControl {
 
         project.criterionsMatrix = mai.generateCriterionsMatrix(tree.getChildren());
         project.alternativesMatrix = mai.generateAlternativesMatrix(tree.getChildren());
+        project.currentStage = "new";
 
 
         String projectJson = gson.toJson(project, type_project);

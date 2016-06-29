@@ -1,11 +1,12 @@
 package ozone.mai_2;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.List;
@@ -16,11 +17,13 @@ import java.util.List;
 public class ProjectAdapter extends ArrayAdapter<Project> {
     private final Context context;
     private final List<Project> projects;
+    private final Activity activity;
     private ProjectControl control;
-    public ProjectAdapter(Context context, List<Project> projects){
-        super(context, R.layout.row_layout, projects);
-        this.context = context;
+    public ProjectAdapter(Activity activity, List<Project> projects){
+        super(activity, R.layout.row_layout, projects);
+        this.context = activity;
         this.projects = projects;
+        this.activity = activity;
     }
     @Override
     public View getView(final int position, View convertView, final ViewGroup parent) {
@@ -31,6 +34,7 @@ public class ProjectAdapter extends ArrayAdapter<Project> {
         TextView projectChangeView = (TextView)rowView.findViewById(R.id.project_change);
         TextView projectDeleteView = (TextView)rowView.findViewById(R.id.project_delete);
         TextView projectResult = (TextView)rowView.findViewById(R.id.project_completed);
+
 
 
         projectObjective.setText(projects.get(position).objective);
@@ -44,6 +48,19 @@ public class ProjectAdapter extends ArrayAdapter<Project> {
         });
 
 
+        if(projects.get(position).currentStage.equals("new")){
+            projectChangeView.setText("Оценка");
+        }
+        projectChangeView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                CurrentProject.setCurrentProject(projects.get(position));
+                Intent intent = new Intent("android.intent.action.CHOOSE_JUDGMENT");
+                activity.startActivity(intent);
+                activity.finish();
+            }
+        });
 
         if(projects.get(position).resultVector != null){
             Integer altId = -1;

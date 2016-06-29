@@ -23,5 +23,6 @@ public class Project{
     public List<Integer> criterionsPositions;
     public List<Integer> alternativesPostions;
     public LinkedHashMap<Integer, Double> resultVector = null;
+    public String currentStage;
 
 }

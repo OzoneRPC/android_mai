@@ -32,7 +32,7 @@
         android:focusableInTouchMode="true"
         android:elegantTextHeight="false"
         android:editable="false"
-        android:textSize="20dp"
+        android:textSize="15dp"
         android:textIsSelectable="true" />
 
     <Button
