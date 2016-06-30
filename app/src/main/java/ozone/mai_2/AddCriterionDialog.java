@@ -29,7 +29,7 @@ public class AddCriterionDialog extends DialogFragment{
         final View view = inflater.inflate(R.layout.add_criterion_dialog, null);
 
         builder.setTitle("Добавить критерий");  // заголовок
-        builder.setMessage("Выберите тип добавляемого элемента: связанный критерий или альтернатива"); // сообщение]
+        builder.setMessage("Введите название критерия"); // сообщение]
 
 
         builder.setPositiveButton("Добавить", new DialogInterface.OnClickListener() {

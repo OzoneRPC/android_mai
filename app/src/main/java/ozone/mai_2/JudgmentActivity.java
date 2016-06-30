@@ -11,13 +11,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.infteh.comboseekbar.ComboSeekBar;
 import com.unnamed.b.atv.model.TreeNode;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -60,6 +60,13 @@ public class JudgmentActivity extends AppCompatActivity {
                 alternatives();
                 break;
         }
+        Button save = (Button)findViewById(R.id.save);
+        save.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                saveAndExit();
+            }
+        });
 
     }
     private void addComboSeekBar(final int rowKey, final int colKey, final int crId){
@@ -98,32 +105,25 @@ public class JudgmentActivity extends AppCompatActivity {
             }
         }
 
+        String[] pointsArrShort = {"9","7","5","3","1","3","5","7","9" };
+        String[] pointsArrLong = {"9","8","7","6","5","4","3","2","1","2","3","4","5","6","7","8","9"};
 
-        List<String> points = new ArrayList<>();
-        points.add("9");
-        points.add("7");
-        points.add("5");
-        points.add("3");
-        points.add("1");
-        points.add("3");
-        points.add("5");
-        points.add("7");
-        points.add("9");
-        comboSeekBar.setId(id);
-        comboSeekBar.setAdapter(points);
-        int selection;
+
+        comboSeekBar.setId(id++);
+        comboSeekBar.setAdapter(Arrays.asList(pointsArrLong));
+        int selection = 8;
 
         switch (judgType){
             case 0:
-                selection = currentProject.criterionJudgmentMaked ? currentProject.crPositions.get(id) : 4;
+                if(currentProject.criterionJudgmentMaked){
+                    selection = currentProject.crPositions.containsKey(comboSeekBar.getId())? currentProject.crPositions.get(comboSeekBar.getId()) : 8;
+                }
                 break;
             case 1:
-                selection = currentProject.alternativeJudgmentMaked ? currentProject.altPositions.get(id) : 4;
+                if(currentProject.alternativeJudgmentMaked){
+                    selection = currentProject.altPositions.containsKey(comboSeekBar.getId())? currentProject.altPositions.get(comboSeekBar.getId()) : 8;
+                }
                 break;
-            default:
-                selection = 4;
-                break;
-
         }
         comboSeekBar.setSelection(selection);
 
@@ -135,9 +135,10 @@ public class JudgmentActivity extends AppCompatActivity {
                 }else{
                     currentProject.altPositions.put(v.getId(), position);
                 }
-                double value = getComboSeebarValueByPosition(position);
+
+                double value = getComboSeebarValueByPositionFull(position);
                 double invertedValue;
-                if(position < 4){
+                if(position < 8){
                     invertedValue = value;
                     value = 1.0/value;
                 }else{
@@ -150,30 +151,16 @@ public class JudgmentActivity extends AppCompatActivity {
                     currentProject.alternativesMatrix.get(crId).get(rowKey).put(colKey, value);
                     currentProject.alternativesMatrix.get(crId).get(colKey).put(rowKey, invertedValue);
                 }
-                notCompleted--;
-                if(notCompleted == 0 || ((judgType == 0 && currentProject.criterionJudgmentMaked) || (judgType == 1 && currentProject.alternativeJudgmentMaked))){
-                    Button save = (Button)findViewById(R.id.save);
-                    save.setVisibility(View.VISIBLE);
-                    save.setOnClickListener(new View.OnClickListener(){
-                        @Override
-                        public void onClick(View v){
-                            saveAndExit();
-                        }
-                    });
-                }
             }
         });
-        id++;
         seekbarContainer.addView(view);
     }
     private void criterions(){
-
         List<Integer> columnKeys = new ArrayList<>(currentProject.criterionsMatrix.keySet());
 
         for (int i = 0; i < columnKeys.size()-1; i++){
             HashMap<Integer, Double> rowMap = (HashMap<Integer, Double>)currentProject.criterionsMatrix.get(columnKeys.get(i));
             List<Integer> rowKeys = new ArrayList<Integer>(rowMap.keySet());
-
             for(int j = 1; j <= rowKeys.size() - 1 - i; j++ ){
                 int rowKey = columnKeys.get(i);
                 int colKey = columnKeys.get(j+i);
@@ -181,10 +168,6 @@ public class JudgmentActivity extends AppCompatActivity {
                 notCompleted++;
             }
         }
-
-
-
-
     }
     private void alternatives(){
 
@@ -229,6 +212,44 @@ public class JudgmentActivity extends AppCompatActivity {
                 break;
             case 4:
                 result = 1;
+                break;
+        }
+        return result;
+    }
+    public int getComboSeebarValueByPositionFull(int position){
+        int result = 1;
+        switch (position){
+            case 0:
+            case 16:
+                result = 9;
+                break;
+            case 1:
+            case 15:
+                result = 8;
+                break;
+            case 2:
+            case 14:
+                result = 7;
+                break;
+            case 3:
+            case 13:
+                result = 6;
+                break;
+            case 4:
+            case 12:
+                result = 5;
+                break;
+            case 5:
+            case 11:
+                result = 4;
+                break;
+            case 6:
+            case 10:
+                result = 3;
+                break;
+            case 7:
+            case 9:
+                result = 2;
                 break;
         }
         return result;

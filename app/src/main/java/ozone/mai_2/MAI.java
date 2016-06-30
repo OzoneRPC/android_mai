@@ -31,11 +31,7 @@ public class MAI {
             LinkedHashMap<Integer, Double> vector = new LinkedHashMap<>();
             for(int j=0; j < criterions.size(); j++){
                 int rowId = ((CriterionsTreeHolder)criterions.get(j).getViewHolder()).getValues().id;
-                if(i == j){
-                    vector.put(rowId, 1.0);
-                }else{
-                    vector.put(rowId, 0.0);
-                }
+                vector.put(rowId, 1.0);
             }
             matrix.put(columnId, vector);
         }
@@ -55,11 +51,7 @@ public class MAI {
                 LinkedHashMap<Integer, Double> row = new LinkedHashMap<>();
                 for(int k = 0; k < criterions.get(i).getChildren().size(); k++){
                     int rowId = ((CriterionsTreeHolder)criterions.get(i).getChildren().get(k).getViewHolder()).getValues().id;
-                    if(j == k){
-                        row.put(rowId, 1.0);
-                    }else{
-                        row.put(rowId, 0.0);
-                    }
+                    row.put(rowId, 1.0);
                 }
                 matrix.put(columnId, row);
             }
@@ -73,11 +65,7 @@ public class MAI {
         for(int i=0; i < size;i++){
             ArrayList<Double> vector = new ArrayList<>();
             for(int j=0; j < size; j++){
-                if(i == j){
-                    vector.add(1.0);
-                }else{
-                    vector.add(0.0);
-                }
+                vector.add(1.0);
             }
             matrix.add(vector);
         }
@@ -119,8 +107,8 @@ public class MAI {
         int length = A.size();
         ArrayList<Double> Wmax = new ArrayList<>();
         ArrayList<Double> Ae = new ArrayList<>();
-        double vectorSum = 0;
 
+        double vectorSum = 0;
 
         for(int arrayIndex = 0; arrayIndex < length; arrayIndex++){
             vectorSum = 0;
@@ -129,13 +117,17 @@ public class MAI {
             }
             Ae.add(arrayIndex, vectorSum);
         }
+
         double eTAe = 0;
+
         for(int arrayIndex = 0; arrayIndex < Ae.size(); arrayIndex++){
             eTAe += Ae.get(arrayIndex);
         }
+
         for(int arrayIndex = 0; arrayIndex < Ae.size(); arrayIndex++){
             Wmax.add(arrayIndex, Ae.get(arrayIndex) / eTAe);
         }
+
         return Wmax;
     }
 
@@ -309,18 +301,42 @@ public class MAI {
         for (int i=0; i < matrix.size(); i++){
             tempA.add(0.0);
         }
+        //LinkedHashMap<Integer, LinkedHashMap<Integer, Double>> tempMatrix = normalizeMatrix(matrix);
         List<Integer> rowKeySet = new ArrayList<>(matrix.keySet());
-
         ArrayList<Double> tempWmax = new ArrayList<>(wmax.values());
 
         for(int i = 0; i < matrix.size(); i++){
             vectorSum = 0;
             for(int j = 0; j < matrix.get(rowKeySet.get(i)).size(); j++){
-                vectorSum+=matrix.get(rowKeySet.get(j)).get(rowKeySet.get(i));
+                vectorSum += matrix.get(rowKeySet.get(j)).get(rowKeySet.get(i));
             }
             tempA.set(i, vectorSum);
         }
         return multipyVectors(tempA, tempWmax);
+    }
+    public LinkedHashMap<Integer, LinkedHashMap<Integer, Double>> normalizeMatrix(LinkedHashMap<Integer, LinkedHashMap<Integer, Double>> matrix){
+        int size = matrix.size();
+
+        LinkedHashMap<Integer, LinkedHashMap<Integer, Double>> tempM = new LinkedHashMap<>();
+
+
+
+        for(Integer row : matrix.keySet()){
+            LinkedHashMap<Integer, Double> rowMap = new LinkedHashMap<>();
+            for(Integer col: matrix.get(row).keySet()){
+                rowMap.put(col,matrix.get(row).get(col));
+            }
+            tempM.put(row, rowMap);
+        }
+
+
+        for(Integer row : matrix.keySet()){
+            for(Integer col : matrix.get(row).keySet()){
+                double value = matrix.get(row).get(col) / size;
+                tempM.get(row).put(col, value);
+            }
+        }
+        return tempM;
     }
     public double multipyVectors(ArrayList<Double> vectorA, ArrayList<Double> vectorB){
         double sum = 0.0;
